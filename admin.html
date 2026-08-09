@@ -162,17 +162,31 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_adN0jivaihhqwcORVtQsWstQcqE8dImABn6lyGJFBYCA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzMGaFyvPNfYyFT9s2gakYfmM16AkDL2lpe8H7MwVUNExvJrWUs8d39NL44-cI4dHT5Cg/exec";
 
     async function callAPI(action, data = {}) {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({ action, ...data })
-      });
-      return res.json();
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify({ action, ...data }),
+          redirect: "follow"
+        });
+
+        const text = await res.text();
+        
+        // Agar HTML aa gaya to error
+        if (text.trim().startsWith("<!")) {
+          throw new Error("API ne HTML return kiya. Deployment check karo.");
+        }
+
+        return JSON.parse(text);
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
     }
 
     function showMsg(id, text, isError = false) {
@@ -203,7 +217,7 @@
           showMsg("tMsg", res.message || "Error", true);
         }
       } catch (err) {
-        showMsg("tMsg", "Network Error: " + err.message, true);
+        showMsg("tMsg", "Error: " + err.message, true);
       }
     }
 
@@ -232,7 +246,7 @@
           showMsg("gMsg", res.message || "Error", true);
         }
       } catch (err) {
-        showMsg("gMsg", "Network Error: " + err.message, true);
+        showMsg("gMsg", "Error: " + err.message, true);
       }
     }
 
@@ -255,7 +269,7 @@
           showMsg("uMsg", res.message || "Error", true);
         }
       } catch (err) {
-        showMsg("uMsg", "Network Error: " + err.message, true);
+        showMsg("uMsg", "Error: " + err.message, true);
       }
     }
 
@@ -285,7 +299,6 @@
       }
     }
 
-    // Page load pe groups load karo
     loadGroups();
   </script>
 </body>
