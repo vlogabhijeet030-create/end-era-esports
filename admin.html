@@ -167,6 +167,9 @@
     async function callAPI(action, data = {}) {
       const res = await fetch(API_URL, {
         method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
         body: JSON.stringify({ action, ...data })
       });
       return res.json();
@@ -191,12 +194,16 @@
         matchTime: document.getElementById("tTime").value
       };
 
-      const res = await callAPI("createTournament", data);
-      if (res.ok) {
-        showMsg("tMsg", "Tournament Created! ID: " + res.tournamentId);
-        document.getElementById("gTournamentId").value = res.tournamentId;
-      } else {
-        showMsg("tMsg", res.message, true);
+      try {
+        const res = await callAPI("createTournament", data);
+        if (res.ok) {
+          showMsg("tMsg", "Tournament Created! ID: " + res.tournamentId);
+          document.getElementById("gTournamentId").value = res.tournamentId;
+        } else {
+          showMsg("tMsg", res.message || "Error", true);
+        }
+      } catch (err) {
+        showMsg("tMsg", "Network Error: " + err.message, true);
       }
     }
 
@@ -216,12 +223,16 @@
         matchTime: document.getElementById("gTime").value
       };
 
-      const res = await callAPI("createGroup", data);
-      if (res.ok) {
-        showMsg("gMsg", "Group Created! ID: " + res.groupId);
-        loadGroups();
-      } else {
-        showMsg("gMsg", res.message, true);
+      try {
+        const res = await callAPI("createGroup", data);
+        if (res.ok) {
+          showMsg("gMsg", "Group Created! ID: " + res.groupId);
+          loadGroups();
+        } else {
+          showMsg("gMsg", res.message || "Error", true);
+        }
+      } catch (err) {
+        showMsg("gMsg", "Network Error: " + err.message, true);
       }
     }
 
@@ -235,34 +246,43 @@
         roomPassword: document.getElementById("uRoomPass").value
       };
 
-      const res = await callAPI("updateRoom", data);
-      if (res.ok) {
-        showMsg("uMsg", "Room Updated Successfully!");
-        loadGroups();
-      } else {
-        showMsg("uMsg", res.message, true);
+      try {
+        const res = await callAPI("updateRoom", data);
+        if (res.ok) {
+          showMsg("uMsg", "Room Updated Successfully!");
+          loadGroups();
+        } else {
+          showMsg("uMsg", res.message || "Error", true);
+        }
+      } catch (err) {
+        showMsg("uMsg", "Network Error: " + err.message, true);
       }
     }
 
     async function loadGroups() {
-      const res = await callAPI("getGroups");
-      const list = document.getElementById("groupsList");
+      try {
+        const res = await callAPI("getGroups");
+        const list = document.getElementById("groupsList");
 
-      if (!res.ok || !res.groups.length) {
-        list.innerHTML = "<div style='color:#64748b;font-size:13px;'>No groups yet</div>";
-        return;
+        if (!res.ok || !res.groups || !res.groups.length) {
+          list.innerHTML = "<div style='color:#64748b;font-size:13px;'>No groups yet</div>";
+          return;
+        }
+
+        list.innerHTML = res.groups.map(g => `
+          <div class="group-item">
+            <div><b>\( {g.groupName}</b> ( \){g.groupId})</div>
+            <div>Room: ${g.roomId} | Pass: ${g.roomPassword}</div>
+            <div>Time: ${g.matchTime || "-"}</div>
+            <a class="link" href="match-room.html?id=${g.groupId}" target="_blank">
+              Open Match Room →
+            </a>
+          </div>
+        `).join("");
+      } catch (err) {
+        document.getElementById("groupsList").innerHTML = 
+          "<div style='color:#fca5a5;font-size:13px;'>Error loading groups</div>";
       }
-
-      list.innerHTML = res.groups.map(g => `
-        <div class="group-item">
-          <div><b>\( {g.groupName}</b> ( \){g.groupId})</div>
-          <div>Room: ${g.roomId} | Pass: ${g.roomPassword}</div>
-          <div>Time: ${g.matchTime || "-"}</div>
-          <a class="link" href="match-room.html?id=${g.groupId}" target="_blank">
-            Open Match Room →
-          </a>
-        </div>
-      `).join("");
     }
 
     // Page load pe groups load karo
