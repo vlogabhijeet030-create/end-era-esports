@@ -1,1 +1,272 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Dashboard</title><link rel="stylesheet" href="style.css"></head><body><header><a class="logo" href="index.html">END ERA <small>ADMIN</small></a><nav><a href="index.html">Website</a><a class="active" href="admin.html">Dashboard</a><a href="#" onclick="logout()">Logout</a></nav></header><main><section class="page"><p class="gold">CONTROL ROOM</p><h1>ADMIN DASHBOARD</h1><div class="stats"><div><b id="tc">0</b><span>Tournaments</span></div><div><b id="gc">0</b><span>Groups</span></div><div><b>1248</b><span>Users</span></div></div><div class="adminGrid"><form class="panel" onsubmit="createTournament(event)"><h2>Create Tournament</h2><input id="tn" placeholder="Tournament name" required><select id="tt"><option value="free">Free</option><option value="paid">Paid</option></select><input id="entry" placeholder="Entry fee (e.g. ₹50)"><input id="prize" placeholder="Prize pool"><input id="date" placeholder="Date / Time"><input id="map" placeholder="Map"><button class="btn full">Create Tournament</button></form><form class="panel" onsubmit="createGroup(event)"><h2>Create Group / Room</h2><input id="gn" placeholder="Group 01" required><input id="mn" placeholder="Match #01"><input id="rid" placeholder="Room ID" required><input id="rp" placeholder="Room Password" required><input id="rt" placeholder="Room open time"><button class="btn full">Publish Room</button></form></div><div class="panel"><h2>Created Tournaments</h2><div id="adminT"></div></div><div class="panel"><h2>Published Groups</h2><div id="adminG"></div></div></section></main><script src="app.js"></script><script>guardAdmin();renderAdmin()</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - END ERA eSports</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+    body { background: #0b0f19; color: #e2e8f0; padding: 16px; min-height: 100vh; }
+    .container { max-width: 500px; margin: 0 auto; }
+    h1 { font-size: 22px; margin-bottom: 6px; }
+    .subtitle { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+    .card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card h2 {
+      font-size: 15px;
+      margin-bottom: 14px;
+      color: #38bdf8;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+    button:active { background: #1d4ed8; }
+    .btn-green { background: #16a34a; }
+    .btn-green:active { background: #15803d; }
+    .msg {
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 10px;
+      display: none;
+    }
+    .success { background: #14532d; color: #4ade80; display: block; }
+    .error { background: #450a0a; color: #fca5a5; display: block; }
+    .group-item {
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .group-item b { color: #38bdf8; }
+    .link {
+      color: #60a5fa;
+      font-size: 12px;
+      word-break: break-all;
+      margin-top: 6px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>END ERA Admin</h1>
+    <p class="subtitle">Control Room</p>
+
+    <!-- Create Tournament -->
+    <div class="card">
+      <h2>Create Tournament</h2>
+      <label>Tournament Name</label>
+      <input type="text" id="tName" placeholder="Example: Solo Scrim">
+      
+      <label>Type</label>
+      <select id="tType">
+        <option value="Scrim">Scrim</option>
+        <option value="Tournament">Tournament</option>
+        <option value="Custom">Custom</option>
+      </select>
+
+      <label>Entry Fee</label>
+      <input type="text" id="tFee" placeholder="0" value="0">
+
+      <label>Prize</label>
+      <input type="text" id="tPrize" placeholder="0" value="0">
+
+      <label>Map</label>
+      <input type="text" id="tMap" placeholder="Bermuda">
+
+      <label>Match Time</label>
+      <input type="text" id="tTime" placeholder="10 Aug, 8:00 PM">
+
+      <button onclick="createTournament()">Create Tournament</button>
+      <div id="tMsg" class="msg"></div>
+    </div>
+
+    <!-- Create Group -->
+    <div class="card">
+      <h2>Create Group / Room</h2>
+      
+      <label>Tournament ID</label>
+      <input type="text" id="gTournamentId" placeholder="TNT_xxxxx">
+
+      <label>Group Name</label>
+      <input type="text" id="gName" placeholder="Group A">
+
+      <label>Room ID</label>
+      <input type="text" id="gRoomId" placeholder="123456" value="WAIT">
+
+      <label>Room Password</label>
+      <input type="text" id="gRoomPass" placeholder="pass123" value="WAIT">
+
+      <label>Match Time</label>
+      <input type="text" id="gTime" placeholder="10 Aug, 8:00 PM">
+
+      <button class="btn-green" onclick="createGroup()">Create Group</button>
+      <div id="gMsg" class="msg"></div>
+    </div>
+
+    <!-- Update Room -->
+    <div class="card">
+      <h2>Update Room ID / Password</h2>
+      
+      <label>Group ID</label>
+      <input type="text" id="uGroupId" placeholder="GRP_xxxxx">
+
+      <label>New Room ID</label>
+      <input type="text" id="uRoomId" placeholder="New Room ID">
+
+      <label>New Password</label>
+      <input type="text" id="uRoomPass" placeholder="New Password">
+
+      <button onclick="updateRoom()">Update Room</button>
+      <div id="uMsg" class="msg"></div>
+    </div>
+
+    <!-- Groups List -->
+    <div class="card">
+      <h2>All Groups</h2>
+      <button onclick="loadGroups()" style="margin-top:0; background:#334155;">Refresh Groups</button>
+      <div id="groupsList" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_adN0jivaihhqwcORVtQsWstQcqE8dImABn6lyGJFBYCA/exec";
+
+    async function callAPI(action, data = {}) {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action, ...data })
+      });
+      return res.json();
+    }
+
+    function showMsg(id, text, isError = false) {
+      const el = document.getElementById(id);
+      el.innerText = text;
+      el.className = "msg " + (isError ? "error" : "success");
+    }
+
+    async function createTournament() {
+      const name = document.getElementById("tName").value.trim();
+      if (!name) return showMsg("tMsg", "Name required", true);
+
+      const data = {
+        name,
+        type: document.getElementById("tType").value,
+        entryFee: document.getElementById("tFee").value,
+        prize: document.getElementById("tPrize").value,
+        map: document.getElementById("tMap").value,
+        matchTime: document.getElementById("tTime").value
+      };
+
+      const res = await callAPI("createTournament", data);
+      if (res.ok) {
+        showMsg("tMsg", "Tournament Created! ID: " + res.tournamentId);
+        document.getElementById("gTournamentId").value = res.tournamentId;
+      } else {
+        showMsg("tMsg", res.message, true);
+      }
+    }
+
+    async function createGroup() {
+      const tournamentId = document.getElementById("gTournamentId").value.trim();
+      const groupName = document.getElementById("gName").value.trim();
+      
+      if (!tournamentId || !groupName) {
+        return showMsg("gMsg", "Tournament ID and Group Name required", true);
+      }
+
+      const data = {
+        tournamentId,
+        groupName,
+        roomId: document.getElementById("gRoomId").value,
+        roomPassword: document.getElementById("gRoomPass").value,
+        matchTime: document.getElementById("gTime").value
+      };
+
+      const res = await callAPI("createGroup", data);
+      if (res.ok) {
+        showMsg("gMsg", "Group Created! ID: " + res.groupId);
+        loadGroups();
+      } else {
+        showMsg("gMsg", res.message, true);
+      }
+    }
+
+    async function updateRoom() {
+      const groupId = document.getElementById("uGroupId").value.trim();
+      if (!groupId) return showMsg("uMsg", "Group ID required", true);
+
+      const data = {
+        groupId,
+        roomId: document.getElementById("uRoomId").value,
+        roomPassword: document.getElementById("uRoomPass").value
+      };
+
+      const res = await callAPI("updateRoom", data);
+      if (res.ok) {
+        showMsg("uMsg", "Room Updated Successfully!");
+        loadGroups();
+      } else {
+        showMsg("uMsg", res.message, true);
+      }
+    }
+
+    async function loadGroups() {
+      const res = await callAPI("getGroups");
+      const list = document.getElementById("groupsList");
+
+      if (!res.ok || !res.groups.length) {
+        list.innerHTML = "<div style='color:#64748b;font-size:13px;'>No groups yet</div>";
+        return;
+      }
+
+      list.innerHTML = res.groups.map(g => `
+        <div class="group-item">
+          <div><b>\( {g.groupName}</b> ( \){g.groupId})</div>
+          <div>Room: ${g.roomId} | Pass: ${g.roomPassword}</div>
+          <div>Time: ${g.matchTime || "-"}</div>
+          <a class="link" href="match-room.html?id=${g.groupId}" target="_blank">
+            Open Match Room →
+          </a>
+        </div>
+      `).join("");
+    }
+
+    // Page load pe groups load karo
+    loadGroups();
+  </script>
+</body>
+</html>
