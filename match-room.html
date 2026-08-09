@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match Room - END ERA eSports</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    body {
+      background: #0b0f19;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-top: 10px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 13px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .lobby-box {
+      background: #0f172a;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lobby-label {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .lobby-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: 1px;
+    }
+    .copy-btn {
+      background: #1e293b;
+      border: none;
+      color: #e2e8f0;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .copy-btn:active {
+      background: #334155;
+    }
+    .status {
+      display: inline-block;
+      background: #14532d;
+      color: #4ade80;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #1e293b;
+      font-size: 14px;
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .info-label {
+      color: #94a3b8;
+    }
+    .info-value {
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      color: #64748b;
+      padding: 8px 4px;
+      font-weight: 600;
+      border-bottom: 1px solid #1e293b;
+    }
+    td {
+      padding: 10px 4px;
+      border-bottom: 1px solid #1e293b;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .rank {
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #64748b;
+    }
+    .error {
+      background: #450a0a;
+      color: #fca5a5;
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+      margin: 20px 0;
+    }
+    .whatsapp-btn {
+      display: block;
+      background: #16a34a;
+      color: white;
+      text-align: center;
+      padding: 14px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>END ERA eSports</h1>
+      <p>MATCH ROOM</p>
+    </div>
+
+    <div id="content">
+      <div class="loading">Loading match data...</div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_adN0jivaihhqwcORVtQsWstQcqE8dImABn6lyGJFBYCA/exec";
+
+    // URL se groupId nikaalo (example: match-room.html?id=GRP_xxxxx)
+    const urlParams = new URLSearchParams(window.location.search);
+    const groupId = urlParams.get("id");
+
+    async function callAPI(action, data = {}) {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action, ...data })
+      });
+      return res.json();
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied: " + text);
+      });
+    }
+
+    async function loadMatchRoom() {
+      const content = document.getElementById("content");
+
+      if (!groupId) {
+        content.innerHTML = `<div class="error">Invalid Match Room.<br>Group ID missing.</div>`;
+        return;
+      }
+
+      try {
+        // Group details
+        const groupRes = await callAPI("getGroup", { groupId });
+        if (!groupRes.ok) {
+          content.innerHTML = `<div class="error">${groupRes.message || "Group not found"}</div>`;
+          return;
+        }
+        const group = groupRes.group;
+
+        // Points Table
+        const pointsRes = await callAPI("getPointsTable", { groupId });
+        const pointsTable = pointsRes.ok ? pointsRes.pointsTable : [];
+
+        // Registrations (teams)
+        const regRes = await callAPI("getRegistrations", { tournamentId: group.tournamentId });
+        const registrations = regRes.ok ? regRes.registrations : [];
+
+        // HTML banana
+        let html = `
+          <div class="status">${group.roomStatus || "WAITING"}</div>
+
+          <div class="card">
+            <div class="card-title">Lobby Credentials</div>
+            
+            <div class="lobby-box">
+              <div>
+                <div class="lobby-label">Room ID</div>
+                <div class="lobby-value" id="roomId">${group.roomId || "WAIT"}</div>
+              </div>
+              <button class="copy-btn" onclick="copyText('${group.roomId || ""}')">COPY</button>
+            </div>
+
+            <div class="lobby-box">
+              <div>
+                <div class="lobby-label">Password</div>
+                <div class="lobby-value" id="roomPass">${group.roomPassword || "WAIT"}</div>
+              </div>
+              <button class="copy-btn" onclick="copyText('${group.roomPassword || ""}')">COPY</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Match Info</div>
+            <div class="info-row">
+              <span class="info-label">Group</span>
+              <span class="info-value">${group.groupName || "-"}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Match Time</span>
+              <span class="info-value">${group.matchTime || "--"}</span>
+            </div>
+          </div>
+        `;
+
+        // Points Table
+        html += `
+          <div class="card">
+            <div class="card-title">Points Table</div>
+            ${pointsTable.length === 0 ? 
+              `<div style="color:#64748b;font-size:14px;padding:10px 0;">Waiting for results...</div>` 
+              : 
+              `<table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Team</th>
+                    <th>Pts</th>
+                    <th>Kills</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${pointsTable.map((t, i) => `
+                    <tr>
+                      <td class="rank">${i + 1}</td>
+                      <td>${t.teamId}</td>
+                      <td>${t.totalPoints}</td>
+                      <td>${t.totalKills}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>`
+            }
+          </div>
+        `;
+
+        // Teams
+        html += `
+          <div class="card">
+            <div class="card-title">Participating Teams</div>
+            ${registrations.length === 0 ? 
+              `<div style="color:#64748b;font-size:14px;">No teams yet.</div>` 
+              : 
+              registrations.map((r, i) => `
+                <div class="info-row">
+                  <span class="info-label">Slot ${i + 1}</span>
+                  <span class="info-value">${r.teamId}</span>
+                </div>
+              `).join("")
+            }
+          </div>
+        `;
+
+        // WhatsApp (optional - apna link daal dena)
+        html += `
+          <a href="https://whatsapp.com/channel/your-channel-link" class="whatsapp-btn" target="_blank">
+            Join WhatsApp Channel
+          </a>
+        `;
+
+        content.innerHTML = html;
+
+      } catch (err) {
+        content.innerHTML = `<div class="error">Error loading data.<br>${err.message}</div>`;
+      }
+    }
+
+    loadMatchRoom();
+  </script>
+</body>
+</html>
