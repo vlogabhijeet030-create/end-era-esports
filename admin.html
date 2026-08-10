@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;font-family:system-ui,sans-serif}
 body{margin:0;background:#080c14;color:#e5e7eb;padding:16px}
-.container{max-width:600px;margin:auto}
+.container{max-width:650px;margin:auto}
 h1{margin:0;font-size:24px}
 .subtitle{color:#94a3b8;margin:4px 0 20px}
 .card{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:16px;margin-bottom:16px}
@@ -45,7 +45,9 @@ button{width:100%;padding:12px;margin-top:12px;border:0;border-radius:9px;backgr
 <h1>END ERA Admin</h1>
 <p class="subtitle">Control Room • 12 Team System</p>
 
+<!-- CREATE TOURNAMENT -->
 <div class="card">
+
 <h2>Create Tournament</h2>
 
 <label>Tournament Name</label>
@@ -70,36 +72,51 @@ button{width:100%;padding:12px;margin-top:12px;border:0;border-radius:9px;backgr
 <label>Match Time</label>
 <input id="tTime" placeholder="10 Aug, 8:00 PM">
 
-<button onclick="createTournament()">Create Tournament</button>
+<button onclick="createTournament()">CREATE TOURNAMENT</button>
+
 <div id="tMsg" class="msg"></div>
+
 </div>
 
+
+<!-- TOURNAMENT LIST -->
 <div class="card">
+
 <h2>Tournaments</h2>
 
-<button class="gray" onclick="loadTournaments()">Refresh</button>
+<button class="gray" onclick="loadTournaments()">REFRESH</button>
 
 <div id="tournamentList">
 <p class="muted">Loading...</p>
 </div>
+
 </div>
 
+
+<!-- REGISTRATIONS -->
 <div class="card">
+
 <h2>Team Registrations</h2>
 
 <label>Tournament ID</label>
 <input id="regTournamentId" placeholder="TNT_xxxxx">
 
-<button onclick="loadRegistrations()">Load Registrations</button>
+<button onclick="loadRegistrations()">LOAD REGISTRATIONS</button>
 
-<div id="slotCount" class="slot">0 / 12 Teams</div>
+<div id="slotCount" class="slot">
+0 / 12 Teams
+</div>
 
 <div id="registrationList">
 <p class="muted">Select a tournament.</p>
 </div>
+
 </div>
 
+
+<!-- ADMIN REGISTER -->
 <div class="card">
+
 <h2>Admin Register Team</h2>
 
 <label>Tournament ID</label>
@@ -108,19 +125,25 @@ button{width:100%;padding:12px;margin-top:12px;border:0;border-radius:9px;backgr
 <label>Team ID</label>
 <input id="adminTeamId" placeholder="TEAM_xxxxx">
 
-<button class="green" onclick="adminRegister()">Register Team</button>
+<button class="green" onclick="adminRegister()">
+REGISTER TEAM
+</button>
 
 <div id="adminRegMsg" class="msg"></div>
+
 </div>
 
+
+<!-- CREATE GROUP -->
 <div class="card">
-<h2>Create Group / Room</h2>
+
+<h2>Create Match Group</h2>
 
 <label>Tournament ID</label>
 <input id="gTournamentId" placeholder="TNT_xxxxx">
 
 <label>Group Name</label>
-<input id="gName" placeholder="Group A">
+<input id="gName" placeholder="GROUP 1">
 
 <label>Room ID</label>
 <input id="gRoomId" value="WAIT">
@@ -131,12 +154,54 @@ button{width:100%;padding:12px;margin-top:12px;border:0;border-radius:9px;backgr
 <label>Match Time</label>
 <input id="gTime" placeholder="10 Aug, 8:00 PM">
 
-<button class="green" onclick="createGroup()">Create Group</button>
+<button class="green" onclick="createGroup()">
+CREATE GROUP
+</button>
 
 <div id="gMsg" class="msg"></div>
+
 </div>
 
+
+<!-- ALL GROUPS -->
 <div class="card">
+
+<h2>Groups</h2>
+
+<button class="gray" onclick="loadGroups()">
+REFRESH GROUPS
+</button>
+
+<div id="groupsList">
+<p class="muted">Loading...</p>
+</div>
+
+</div>
+
+
+<!-- ASSIGN TEAM -->
+<div class="card">
+
+<h2>Assign Team To Group</h2>
+
+<label>Group ID</label>
+<input id="assignGroupId" placeholder="GRP_xxxxx">
+
+<label>Team ID</label>
+<input id="assignTeamId" placeholder="TEAM_xxxxx">
+
+<button class="green" onclick="assignTeamToGroup()">
+ASSIGN TEAM
+</button>
+
+<div id="assignMsg" class="msg"></div>
+
+</div>
+
+
+<!-- UPDATE ROOM -->
+<div class="card">
+
 <h2>Update Room</h2>
 
 <label>Group ID</label>
@@ -145,25 +210,21 @@ button{width:100%;padding:12px;margin-top:12px;border:0;border-radius:9px;backgr
 <label>Room ID</label>
 <input id="uRoomId" placeholder="123456">
 
-<label>Password</label>
+<label>Room Password</label>
 <input id="uRoomPass" placeholder="123456">
 
-<button onclick="updateRoom()">Update Room</button>
+<button onclick="updateRoom()">
+UPDATE ROOM
+</button>
 
 <div id="uMsg" class="msg"></div>
+
 </div>
 
+
+<!-- RESULTS -->
 <div class="card">
-<h2>All Groups</h2>
 
-<button class="gray" onclick="loadGroups()">Refresh Groups</button>
-
-<div id="groupsList">
-<p class="muted">Loading...</p>
-</div>
-</div>
-
-<div class="card">
 <h2>Submit Result</h2>
 
 <label>Tournament ID</label>
@@ -184,12 +245,16 @@ button{width:100%;padding:12px;margin-top:12px;border:0;border-radius:9px;backgr
 <label>Points</label>
 <input id="rPoints" type="number" placeholder="12">
 
-<button class="green" onclick="submitResult()">Submit Result</button>
+<button class="green" onclick="submitResult()">
+SUBMIT RESULT
+</button>
 
 <div id="rMsg" class="msg"></div>
+
 </div>
 
 </div>
+
 
 <script>
 
@@ -198,6 +263,7 @@ const API_URL="https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_
 const ADMIN_EMAIL="vlogabhijeet030@gmail.com";
 
 const MAX_TEAMS=12;
+
 
 async function callAPI(action,data={}){
 
@@ -229,7 +295,9 @@ message:"API connection failed"
 };
 
 }
+
 }
+
 
 function showMsg(id,text,error=false){
 
@@ -240,7 +308,9 @@ if(!el)return;
 el.textContent=text;
 
 el.className="msg "+(error?"error":"success");
+
 }
+
 
 function escapeHtml(value){
 
@@ -250,15 +320,26 @@ return String(value??"")
 .replace(/>/g,"&gt;")
 .replace(/"/g,"&quot;")
 .replace(/'/g,"&#039;");
+
 }
+
+
+/* CREATE TOURNAMENT */
 
 async function createTournament(){
 
 const name=document.getElementById("tName").value.trim();
 
 if(!name){
-showMsg("tMsg","Tournament name required",true);
+
+showMsg(
+"tMsg",
+"Tournament name required",
+true
+);
+
 return;
+
 }
 
 const r=await callAPI("createTournament",{
@@ -281,6 +362,7 @@ registrationOpen:true
 
 });
 
+
 if(r.ok){
 
 showMsg(
@@ -289,18 +371,29 @@ showMsg(
 );
 
 document.getElementById("regTournamentId").value=r.tournamentId;
+
 document.getElementById("adminTournamentId").value=r.tournamentId;
+
 document.getElementById("gTournamentId").value=r.tournamentId;
+
 document.getElementById("rTournamentId").value=r.tournamentId;
 
 loadTournaments();
 
 }else{
 
-showMsg("tMsg",r.message||"Failed",true);
+showMsg(
+"tMsg",
+r.message||"Failed",
+true
+);
 
 }
+
 }
+
+
+/* LOAD TOURNAMENTS */
 
 async function loadTournaments(){
 
@@ -313,7 +406,9 @@ const r=await callAPI("getTournaments");
 if(!r.ok){
 
 box.innerHTML="<p class='muted'>Unable to load tournaments.</p>";
+
 return;
+
 }
 
 const list=r.tournaments||[];
@@ -321,14 +416,18 @@ const list=r.tournaments||[];
 if(!list.length){
 
 box.innerHTML="<p class='muted'>No tournaments.</p>";
+
 return;
+
 }
+
 
 box.innerHTML=list.map(t=>{
 
 const open=
 t.registrationOpen===true||
 String(t.registrationOpen).toLowerCase()==="true";
+
 
 return`
 
@@ -378,17 +477,28 @@ SELECT
 `;
 
 }).join("");
+
 }
+
+
+/* SELECT TOURNAMENT */
 
 function selectTournament(id){
 
 document.getElementById("regTournamentId").value=id;
+
 document.getElementById("adminTournamentId").value=id;
+
 document.getElementById("gTournamentId").value=id;
+
 document.getElementById("rTournamentId").value=id;
 
 loadRegistrations();
+
 }
+
+
+/* REGISTRATION OPEN/CLOSE */
 
 async function setRegistration(tournamentId,open){
 
@@ -403,14 +513,25 @@ registrationOpen:open
 if(!r.ok){
 
 alert(r.message||"Failed");
+
 return;
+
 }
 
-alert(open?"Registration OPEN":"Registration CLOSED");
+alert(
+open?
+"Registration OPEN":
+"Registration CLOSED"
+);
 
 loadTournaments();
+
 loadRegistrations();
+
 }
+
+
+/* LOAD REGISTRATIONS */
 
 async function loadRegistrations(){
 
@@ -420,21 +541,28 @@ document.getElementById("regTournamentId").value.trim();
 if(!tournamentId){
 
 alert("Tournament ID required");
+
 return;
+
 }
 
 const box=document.getElementById("registrationList");
 
 box.innerHTML="<p class='muted'>Loading...</p>";
 
-const r=await callAPI("getRegistrations",{
+const r=await callAPI(
+"getRegistrations",
+{
 tournamentId:tournamentId
-});
+}
+);
 
 if(!r.ok){
 
 box.innerHTML="<p class='muted'>Unable to load registrations.</p>";
+
 return;
+
 }
 
 const list=r.registrations||[];
@@ -447,11 +575,15 @@ x.status==="confirmed"
 document.getElementById("slotCount").textContent=
 active.length+" / "+MAX_TEAMS+" Teams";
 
+
 if(!list.length){
 
 box.innerHTML="<p class='muted'>No registrations yet.</p>";
+
 return;
+
 }
+
 
 box.innerHTML=list.map(x=>`
 
@@ -478,6 +610,7 @@ x.status==="pending"
 ?
 `
 <div>
+
 <button class="smallbtn green"
 onclick="approve('${x.registrationId}')">
 APPROVE
@@ -487,6 +620,7 @@ APPROVE
 onclick="reject('${x.registrationId}')">
 REJECT
 </button>
+
 </div>
 `
 :""
@@ -497,29 +631,49 @@ REJECT
 </div>
 
 `).join("");
+
 }
+
+
+/* APPROVE */
 
 async function approve(id){
 
-const r=await callAPI("approveRegistration",{
+const r=await callAPI(
+"approveRegistration",
+{
 registrationId:id
-});
+}
+);
 
 alert(r.message||"Done");
 
-if(r.ok)loadRegistrations();
+if(r.ok)
+loadRegistrations();
+
 }
+
+
+/* REJECT */
 
 async function reject(id){
 
-const r=await callAPI("rejectRegistration",{
+const r=await callAPI(
+"rejectRegistration",
+{
 registrationId:id
-});
+}
+);
 
 alert(r.message||"Done");
 
-if(r.ok)loadRegistrations();
+if(r.ok)
+loadRegistrations();
+
 }
+
+
+/* ADMIN REGISTER */
 
 async function adminRegister(){
 
@@ -528,6 +682,7 @@ document.getElementById("adminTournamentId").value.trim();
 
 const teamId=
 document.getElementById("adminTeamId").value.trim();
+
 
 if(!tournamentId||!teamId){
 
@@ -538,21 +693,25 @@ true
 );
 
 return;
+
 }
 
-const r=await callAPI("adminRegisterTeam",{
 
+const r=await callAPI(
+"adminRegisterTeam",
+{
 tournamentId:tournamentId,
-
 teamId:teamId
+}
+);
 
-});
 
 showMsg(
 "adminRegMsg",
 r.message||"Done",
 !r.ok
 );
+
 
 if(r.ok){
 
@@ -562,7 +721,11 @@ tournamentId;
 loadRegistrations();
 
 }
+
 }
+
+
+/* CREATE GROUP */
 
 async function createGroup(){
 
@@ -571,6 +734,7 @@ document.getElementById("gTournamentId").value.trim();
 
 const groupName=
 document.getElementById("gName").value.trim();
+
 
 if(!tournamentId||!groupName){
 
@@ -581,9 +745,13 @@ true
 );
 
 return;
+
 }
 
-const r=await callAPI("createGroup",{
+
+const r=await callAPI(
+"createGroup",
+{
 
 tournamentId:tournamentId,
 
@@ -600,7 +768,9 @@ roomStatus:"waiting",
 matchTime:
 document.getElementById("gTime").value||""
 
-});
+}
+);
+
 
 showMsg(
 "gMsg",
@@ -610,46 +780,26 @@ r.message||"Failed",
 !r.ok
 );
 
+
 if(r.ok){
 
-document.getElementById("rGroupId").value=r.groupId;
+document.getElementById("rGroupId").value=
+r.groupId;
+
+document.getElementById("uGroupId").value=
+r.groupId;
+
+document.getElementById("assignGroupId").value=
+r.groupId;
 
 loadGroups();
 
 }
+
 }
 
-async function updateRoom(){
 
-const groupId=
-document.getElementById("uGroupId").value.trim();
-
-if(!groupId){
-
-showMsg("uMsg","Group ID required",true);
-return;
-}
-
-const r=await callAPI("updateRoom",{
-
-groupId:groupId,
-
-roomId:
-document.getElementById("uRoomId").value,
-
-roomPassword:
-document.getElementById("uRoomPass").value
-
-});
-
-showMsg(
-"uMsg",
-r.message||"Done",
-!r.ok
-);
-
-if(r.ok)loadGroups();
-}
+/* LOAD GROUPS */
 
 async function loadGroups(){
 
@@ -659,25 +809,33 @@ box.innerHTML="<p class='muted'>Loading...</p>";
 
 const r=await callAPI("getGroups");
 
+
 if(!r.ok){
 
 box.innerHTML="<p class='muted'>Unable to load groups.</p>";
+
 return;
+
 }
 
+
 const list=r.groups||[];
+
 
 if(!list.length){
 
 box.innerHTML="<p class='muted'>No groups yet.</p>";
+
 return;
+
 }
+
 
 box.innerHTML=list.map(g=>`
 
 <div class="item">
 
-<b>${escapeHtml(g.groupName)}</b>
+<b>${escapeHtml(g.groupName||"Group")}</b>
 
 <div class="muted">
 Group ID: ${escapeHtml(g.groupId)}
@@ -695,6 +853,15 @@ Password: ${escapeHtml(g.roomPassword||"WAIT")}
 Time: ${escapeHtml(g.matchTime||"TBA")}
 </div>
 
+<div class="row">
+
+<button class="smallbtn green"
+onclick="selectGroup('${escapeHtml(g.groupId)}')">
+SELECT
+</button>
+
+</div>
+
 <a
 href="match-room.html?id=${encodeURIComponent(g.groupId)}"
 target="_blank"
@@ -705,7 +872,133 @@ Open Match Room →
 </div>
 
 `).join("");
+
 }
+
+
+/* SELECT GROUP */
+
+function selectGroup(groupId){
+
+document.getElementById("assignGroupId").value=
+groupId;
+
+document.getElementById("uGroupId").value=
+groupId;
+
+document.getElementById("rGroupId").value=
+groupId;
+
+document.getElementById("assignTeamId").focus();
+
+}
+
+
+/* ASSIGN TEAM */
+
+async function assignTeamToGroup(){
+
+const groupId=
+document.getElementById("assignGroupId").value.trim();
+
+const teamId=
+document.getElementById("assignTeamId").value.trim();
+
+
+if(!groupId||!teamId){
+
+showMsg(
+"assignMsg",
+"Group ID and Team ID required",
+true
+);
+
+return;
+
+}
+
+
+const r=await callAPI(
+"assignTeamToGroup",
+{
+
+groupId:groupId,
+
+teamId:teamId
+
+}
+);
+
+
+showMsg(
+"assignMsg",
+r.message||"Done",
+!r.ok
+);
+
+
+if(r.ok){
+
+document.getElementById("assignTeamId").value="";
+
+loadGroups();
+
+}
+
+}
+
+
+/* UPDATE ROOM */
+
+async function updateRoom(){
+
+const groupId=
+document.getElementById("uGroupId").value.trim();
+
+
+if(!groupId){
+
+showMsg(
+"uMsg",
+"Group ID required",
+true
+);
+
+return;
+
+}
+
+
+const r=await callAPI(
+"updateRoom",
+{
+
+groupId:groupId,
+
+roomId:
+document.getElementById("uRoomId").value,
+
+roomPassword:
+document.getElementById("uRoomPass").value
+
+}
+);
+
+
+showMsg(
+"uMsg",
+r.message||"Done",
+!r.ok
+);
+
+
+if(r.ok)
+loadGroups();
+
+}
+
+
+/* SUBMIT RESULT */
 
 async function submitResult(){
 
@@ -718,6 +1011,7 @@ document.getElementById("rGroupId").value.trim();
 const teamId=
 document.getElementById("rTeamId").value.trim();
 
+
 if(!tournamentId||!groupId||!teamId){
 
 showMsg(
@@ -727,9 +1021,13 @@ true
 );
 
 return;
+
 }
 
-const r=await callAPI("submitResult",{
+
+const r=await callAPI(
+"submitResult",
+{
 
 tournamentId:tournamentId,
 
@@ -746,16 +1044,23 @@ document.getElementById("rKills").value,
 points:
 document.getElementById("rPoints").value
 
-});
+}
+);
+
 
 showMsg(
 "rMsg",
 r.message||"Done",
 !r.ok
 );
+
 }
 
+
+/* START */
+
 loadTournaments();
+
 loadGroups();
 
 </script>
