@@ -1,325 +1,1243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Match Room - END ERA eSports</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-    }
-    body {
-      background: #0b0f19;
-      color: #e2e8f0;
-      min-height: 100vh;
-      padding: 16px;
-    }
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-      padding-top: 10px;
-    }
-    .header h1 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 1px;
-    }
-    .header p {
-      color: #94a3b8;
-      font-size: 13px;
-      margin-top: 4px;
-    }
-    .card {
-      background: #111827;
-      border: 1px solid #1e293b;
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-    .card-title {
-      font-size: 13px;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-      font-weight: 600;
-    }
-    .lobby-box {
-      background: #0f172a;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .lobby-label {
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 4px;
-    }
-    .lobby-value {
-      font-size: 18px;
-      font-weight: 700;
-      color: #38bdf8;
-      letter-spacing: 1px;
-    }
-    .copy-btn {
-      background: #1e293b;
-      border: none;
-      color: #e2e8f0;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    .copy-btn:active {
-      background: #334155;
-    }
-    .status {
-      display: inline-block;
-      background: #14532d;
-      color: #4ade80;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid #1e293b;
-      font-size: 14px;
-    }
-    .info-row:last-child {
-      border-bottom: none;
-    }
-    .info-label {
-      color: #94a3b8;
-    }
-    .info-value {
-      color: #f1f5f9;
-      font-weight: 600;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    th {
-      text-align: left;
-      color: #64748b;
-      padding: 8px 4px;
-      font-weight: 600;
-      border-bottom: 1px solid #1e293b;
-    }
-    td {
-      padding: 10px 4px;
-      border-bottom: 1px solid #1e293b;
-    }
-    tr:last-child td {
-      border-bottom: none;
-    }
-    .rank {
-      font-weight: 700;
-      color: #fbbf24;
-    }
-    .loading {
-      text-align: center;
-      padding: 40px 20px;
-      color: #64748b;
-    }
-    .error {
-      background: #450a0a;
-      color: #fca5a5;
-      padding: 16px;
-      border-radius: 12px;
-      text-align: center;
-      margin: 20px 0;
-    }
-    .whatsapp-btn {
-      display: block;
-      background: #16a34a;
-      color: white;
-      text-align: center;
-      padding: 14px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>END ERA eSports</h1>
-      <p>MATCH ROOM</p>
-    </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <div id="content">
-      <div class="loading">Loading match data...</div>
+<title>Match Room - END ERA eSports</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI',system-ui,sans-serif;
+}
+
+body{
+  background:#0b0f19;
+  color:#e2e8f0;
+  min-height:100vh;
+  padding:16px;
+}
+
+.container{
+  max-width:480px;
+  margin:0 auto;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:24px;
+  padding-top:10px;
+}
+
+.header h1{
+  font-size:22px;
+  font-weight:700;
+  color:#fff;
+  letter-spacing:1px;
+}
+
+.header p{
+  color:#94a3b8;
+  font-size:13px;
+  margin-top:4px;
+}
+
+.card{
+  background:#111827;
+  border:1px solid #1e293b;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+.card-title{
+  font-size:13px;
+  color:#94a3b8;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  margin-bottom:12px;
+  font-weight:600;
+}
+
+.lobby-box{
+  background:#0f172a;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.lobby-box:last-child{
+  margin-bottom:0;
+}
+
+.lobby-label{
+  font-size:12px;
+  color:#64748b;
+  margin-bottom:4px;
+}
+
+.lobby-value{
+  font-size:18px;
+  font-weight:700;
+  color:#38bdf8;
+  letter-spacing:1px;
+  word-break:break-all;
+}
+
+.copy-btn{
+  background:#1e293b;
+  border:none;
+  color:#e2e8f0;
+  padding:8px 14px;
+  border-radius:8px;
+  font-size:13px;
+  cursor:pointer;
+  font-weight:600;
+  flex-shrink:0;
+}
+
+.copy-btn:active{
+  background:#334155;
+}
+
+.status{
+  display:inline-block;
+  background:#14532d;
+  color:#4ade80;
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:20px;
+  font-weight:600;
+  margin-bottom:16px;
+  text-transform:uppercase;
+}
+
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:11px 0;
+
+  border-bottom:1px solid #1e293b;
+  font-size:14px;
+
+  gap:12px;
+}
+
+.info-row:last-child{
+  border-bottom:none;
+}
+
+.info-label{
+  color:#94a3b8;
+  flex-shrink:0;
+}
+
+.info-value{
+  color:#f1f5f9;
+  font-weight:600;
+  text-align:right;
+  word-break:break-word;
+}
+
+.team-name{
+  color:#f1f5f9;
+  font-weight:600;
+  text-align:right;
+}
+
+.team-id{
+  display:block;
+  color:#64748b;
+  font-size:10px;
+  margin-top:3px;
+  font-weight:400;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+th{
+  text-align:left;
+  color:#64748b;
+  padding:8px 4px;
+  font-weight:600;
+  border-bottom:1px solid #1e293b;
+}
+
+td{
+  padding:10px 4px;
+  border-bottom:1px solid #1e293b;
+}
+
+tr:last-child td{
+  border-bottom:none;
+}
+
+.rank{
+  font-weight:700;
+  color:#fbbf24;
+}
+
+.loading{
+  text-align:center;
+  padding:40px 20px;
+  color:#64748b;
+}
+
+.error{
+  background:#450a0a;
+  color:#fca5a5;
+  padding:16px;
+  border-radius:12px;
+  text-align:center;
+  margin:20px 0;
+}
+
+/* PROOFS */
+
+.proof-tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding-bottom:4px;
+  scrollbar-width:none;
+}
+
+.proof-tabs::-webkit-scrollbar{
+  display:none;
+}
+
+.proof-tab{
+  flex-shrink:0;
+  background:#0f172a;
+  color:#94a3b8;
+  border:1px solid #1e293b;
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.proof-tab.active{
+  background:#2563eb;
+  color:#fff;
+  border-color:#2563eb;
+}
+
+.proof-content{
+  margin-top:14px;
+  background:#0f172a;
+  border:1px solid #1e293b;
+  border-radius:12px;
+  min-height:120px;
+  overflow:hidden;
+}
+
+.proof-empty{
+  padding:35px 15px;
+  text-align:center;
+  color:#64748b;
+  font-size:13px;
+}
+
+.proof-image{
+  width:100%;
+  display:block;
+  max-height:500px;
+  object-fit:contain;
+  background:#000;
+}
+
+.proof-link{
+  display:block;
+  text-align:center;
+  background:#2563eb;
+  color:#fff;
+  text-decoration:none;
+  margin:14px;
+  padding:11px;
+  border-radius:9px;
+  font-weight:600;
+  font-size:13px;
+}
+
+.whatsapp-btn{
+  display:block;
+  background:#16a34a;
+  color:white;
+  text-align:center;
+  padding:14px;
+  border-radius:12px;
+  text-decoration:none;
+  font-weight:600;
+  margin-top:8px;
+}
+
+.muted{
+  color:#64748b;
+  font-size:13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>END ERA eSports</h1>
+    <p>MATCH ROOM</p>
+  </div>
+
+  <div id="content">
+    <div class="loading">
+      Loading match data...
     </div>
   </div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzMGaFyvPNfYyFT9s2gakYfmM16AkDL2lpe8H7MwVUNExvJrWUs8d39NL44-cI4dHT5Cg/exec";
+</div>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const groupId = urlParams.get("id");
+<script>
 
-    async function callAPI(action, data = {}) {
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8"
-        },
-        body: JSON.stringify({ action, ...data }),
-        redirect: "follow"
-      });
+/* ==============================
+   API
+============================== */
 
-      const text = await res.text();
-      if (text.trim().startsWith("<!")) {
-        throw new Error("API error");
-      }
-      return JSON.parse(text);
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzMGaFyvPNfYyFT9s2gakYfmM16AkDL2lpe8H7MwVUNExvJrWUs8d39NL44-cI4dHT5Cg/exec";
+
+
+const urlParams =
+new URLSearchParams(window.location.search);
+
+const groupId =
+urlParams.get("id");
+
+
+/* ==============================
+   API CALL
+============================== */
+
+async function callAPI(action,data={}){
+
+  const res = await fetch(API_URL,{
+    method:"POST",
+
+    headers:{
+      "Content-Type":"text/plain;charset=utf-8"
+    },
+
+    body:JSON.stringify({
+      action,
+      ...data
+    }),
+
+    redirect:"follow"
+  });
+
+  const text = await res.text();
+
+  if(
+    text.trim().startsWith("<!")
+  ){
+    throw new Error("API error");
+  }
+
+  return JSON.parse(text);
+}
+
+
+/* ==============================
+   HTML ESCAPE
+============================== */
+
+function escapeHtml(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* ==============================
+   COPY
+============================== */
+
+function copyText(text){
+
+  if(!text){
+    return;
+  }
+
+  navigator.clipboard.writeText(text)
+  .then(()=>{
+    alert("Copied: " + text);
+  })
+  .catch(()=>{
+    alert("Copy failed");
+  });
+
+}
+
+
+/* ==============================
+   TEAM NAME
+============================== */
+
+async function getTeamName(registration){
+
+  /*
+    First try fields already returned
+    by getRegistrations.
+  */
+
+  if(registration.teamName){
+    return registration.teamName;
+  }
+
+  if(registration.name){
+    return registration.name;
+  }
+
+  if(registration.team){
+    if(typeof registration.team === "string"){
+      return registration.team;
     }
 
-    function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Copied: " + text);
-      });
+    if(registration.team.name){
+      return registration.team.name;
     }
 
-    async function loadMatchRoom() {
-      const content = document.getElementById("content");
+    if(registration.team.teamName){
+      return registration.team.teamName;
+    }
+  }
 
-      if (!groupId) {
-        content.innerHTML = `<div class="error">Invalid Match Room.<br>Group ID missing.</div>`;
-        return;
-      }
 
-      try {
-        const groupRes = await callAPI("getGroup", { groupId });
-        if (!groupRes.ok) {
-          content.innerHTML = `<div class="error">${groupRes.message || "Group not found"}</div>`;
-          return;
+  /*
+    If team name isn't included,
+    try getTeam API.
+  */
+
+  try{
+
+    const teamRes =
+      await callAPI("getTeam",{
+        teamId:registration.teamId
+      });
+
+    if(teamRes && teamRes.ok){
+
+      const team =
+        teamRes.team || {};
+
+      return (
+        team.teamName ||
+        team.name ||
+        team.team_name ||
+        registration.teamId
+      );
+
+    }
+
+  }catch(error){
+
+    console.log(
+      "Team name lookup failed:",
+      registration.teamId
+    );
+
+  }
+
+
+  /*
+    Final fallback
+  */
+
+  return registration.teamId || "Unknown Team";
+
+}
+
+
+/* ==============================
+   LOAD TEAM NAMES
+============================== */
+
+async function prepareTeams(registrations){
+
+  const teams =
+    await Promise.all(
+
+      registrations.map(
+        async (r)=>{
+
+          const teamName =
+            await getTeamName(r);
+
+          return{
+            ...r,
+            displayTeamName:teamName
+          };
+
         }
-        const group = groupRes.group;
+      )
 
-        const pointsRes = await callAPI("getPointsTable", { groupId });
-        const pointsTable = pointsRes.ok ? pointsRes.pointsTable : [];
+    );
 
-        const regRes = await callAPI("getRegistrations", { tournamentId: group.tournamentId });
-        const registrations = regRes.ok ? regRes.registrations : [];
+  return teams;
 
-        let html = `
-          <div class="status">${group.roomStatus || "WAITING"}</div>
+}
 
-          <div class="card">
-            <div class="card-title">Lobby Credentials</div>
-            
-            <div class="lobby-box">
-              <div>
-                <div class="lobby-label">Room ID</div>
-                <div class="lobby-value">${group.roomId || "WAIT"}</div>
-              </div>
-              <button class="copy-btn" onclick="copyText('${group.roomId || ""}')">COPY</button>
-            </div>
 
-            <div class="lobby-box">
-              <div>
-                <div class="lobby-label">Password</div>
-                <div class="lobby-value">${group.roomPassword || "WAIT"}</div>
-              </div>
-              <button class="copy-btn" onclick="copyText('${group.roomPassword || ""}')">COPY</button>
-            </div>
-          </div>
+/* ==============================
+   PROOF SYSTEM
+============================== */
 
-          <div class="card">
-            <div class="card-title">Match Info</div>
-            <div class="info-row">
-              <span class="info-label">Group</span>
-              <span class="info-value">${group.groupName || "-"}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Match Time</span>
-              <span class="info-value">${group.matchTime || "--"}</span>
-            </div>
-          </div>
-        `;
+let proofData = {
+  payment:"",
+  lobby:"",
+  bermuda:"",
+  purgatory:""
+};
 
-        html += `
-          <div class="card">
-            <div class="card-title">Points Table</div>
-            ${pointsTable.length === 0 ? 
-              `<div style="color:#64748b;font-size:14px;padding:10px 0;">Waiting for results...</div>` 
-              : 
-              `<table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Team</th>
-                    <th>Pts</th>
-                    <th>Kills</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${pointsTable.map((t, i) => `
-                    <tr>
-                      <td class="rank">${i + 1}</td>
-                      <td>${t.teamId}</td>
-                      <td>${t.totalPoints}</td>
-                      <td>${t.totalKills}</td>
-                    </tr>
-                  `).join("")}
-                </tbody>
-              </table>`
-            }
-          </div>
-        `;
 
-        html += `
-          <div class="card">
-            <div class="card-title">Participating Teams</div>
-            ${registrations.length === 0 ? 
-              `<div style="color:#64748b;font-size:14px;">No teams yet.</div>` 
-              : 
-              registrations.map((r, i) => `
-                <div class="info-row">
-                  <span class="info-label">Slot ${i + 1}</span>
-                  <span class="info-value">${r.teamId}</span>
-                </div>
-              `).join("")
-            }
-          </div>
-        `;
+function normalizeProof(value){
 
-        html += `
-          <a href="#" class="whatsapp-btn">
-            Join WhatsApp Channel
-          </a>
-        `;
+  if(!value){
+    return "";
+  }
 
-        content.innerHTML = html;
+  return String(value).trim();
 
-      } catch (err) {
-        content.innerHTML = `<div class="error">Error loading data.<br>${err.message}</div>`;
-      }
+}
+
+
+function renderProof(type){
+
+  const box =
+    document.getElementById("proofContent");
+
+  if(!box){
+    return;
+  }
+
+  const url =
+    normalizeProof(proofData[type]);
+
+
+  if(!url){
+
+    box.innerHTML = `
+      <div class="proof-empty">
+        No ${escapeHtml(type)} proof uploaded yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /*
+    Image proof
+  */
+
+  const isImage =
+    /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(url);
+
+
+  if(isImage){
+
+    box.innerHTML = `
+
+      <img
+        class="proof-image"
+        src="${escapeHtml(url)}"
+        alt="${escapeHtml(type)} proof"
+        onerror="this.style.display='none';document.getElementById('proofError').style.display='block'"
+      >
+
+      <div
+        id="proofError"
+        class="proof-empty"
+        style="display:none"
+      >
+        Unable to load image.
+      </div>
+
+      <a
+        class="proof-link"
+        href="${escapeHtml(url)}"
+        target="_blank"
+        rel="noopener"
+      >
+        OPEN PROOF
+      </a>
+
+    `;
+
+    return;
+
+  }
+
+
+  /*
+    PDF / Drive / Other proof link
+  */
+
+  box.innerHTML = `
+
+    <div class="proof-empty">
+      Proof is available through the link below.
+    </div>
+
+    <a
+      class="proof-link"
+      href="${escapeHtml(url)}"
+      target="_blank"
+      rel="noopener"
+    >
+      OPEN ${escapeHtml(type.toUpperCase())} PROOF
+    </a>
+
+  `;
+
+}
+
+
+function setupProofTabs(){
+
+  document.querySelectorAll(".proof-tab")
+    .forEach(tab=>{
+
+      tab.addEventListener(
+        "click",
+        ()=>{
+
+          document
+            .querySelectorAll(".proof-tab")
+            .forEach(x=>
+              x.classList.remove("active")
+            );
+
+          tab.classList.add("active");
+
+          renderProof(
+            tab.dataset.type
+          );
+
+        }
+      );
+
+    });
+
+}
+
+
+/* ==============================
+   LOAD MATCH ROOM
+============================== */
+
+async function loadMatchRoom(){
+
+  const content =
+    document.getElementById("content");
+
+
+  if(!groupId){
+
+    content.innerHTML = `
+      <div class="error">
+        Invalid Match Room.<br>
+        Group ID missing.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  try{
+
+    /* ==========================
+       GROUP
+    ========================== */
+
+    const groupRes =
+      await callAPI(
+        "getGroup",
+        {groupId}
+      );
+
+
+    if(!groupRes.ok){
+
+      content.innerHTML = `
+        <div class="error">
+          ${escapeHtml(
+            groupRes.message ||
+            "Group not found"
+          )}
+        </div>
+      `;
+
+      return;
+
     }
 
-    loadMatchRoom();
-  </script>
+
+    const group =
+      groupRes.group || {};
+
+
+    /* ==========================
+       POINTS
+    ========================== */
+
+    const pointsRes =
+      await callAPI(
+        "getPointsTable",
+        {groupId}
+      );
+
+    const pointsTable =
+      pointsRes.ok
+      ? pointsRes.pointsTable || []
+      : [];
+
+
+    /* ==========================
+       REGISTRATIONS
+    ========================== */
+
+    const regRes =
+      await callAPI(
+        "getRegistrations",
+        {
+          tournamentId:
+            group.tournamentId
+        }
+      );
+
+
+    let registrations =
+      regRes.ok
+      ? regRes.registrations || []
+      : [];
+
+
+    /*
+      Only confirmed registrations
+      should normally appear in match room.
+    */
+
+    registrations =
+      registrations.filter(r=>
+        String(r.status || "")
+          .toLowerCase() === "confirmed"
+        ||
+        String(r.status || "")
+          .toLowerCase() === "approved"
+        ||
+        !r.status
+      );
+
+
+    /*
+      Team names
+    */
+
+    registrations =
+      await prepareTeams(
+        registrations
+      );
+
+
+    /* ==========================
+       PROOFS
+    ========================== */
+
+    proofData = {
+
+      payment:
+        group.paymentProof ||
+        group.paymentProofUrl ||
+        group.payment_proof ||
+        "",
+
+      lobby:
+        group.lobbyProof ||
+        group.lobbyProofUrl ||
+        group.lobby_proof ||
+        "",
+
+      bermuda:
+        group.bermudaProof ||
+        group.bermudaProofUrl ||
+        group.bermuda_proof ||
+        "",
+
+      purgatory:
+        group.purgatoryProof ||
+        group.purgatoryProofUrl ||
+        group.purgatory_proof ||
+        ""
+
+    };
+
+
+    /* ==========================
+       MAIN HTML
+    ========================== */
+
+    let html = `
+
+      <div class="status">
+        ${escapeHtml(
+          group.roomStatus ||
+          "WAITING"
+        )}
+      </div>
+
+
+      <!-- LOBBY -->
+
+      <div class="card">
+
+        <div class="card-title">
+          Lobby Credentials
+        </div>
+
+
+        <div class="lobby-box">
+
+          <div>
+
+            <div class="lobby-label">
+              Room ID
+            </div>
+
+            <div class="lobby-value">
+              ${escapeHtml(
+                group.roomId ||
+                "WAIT"
+              )}
+            </div>
+
+          </div>
+
+
+          <button
+            class="copy-btn"
+            onclick="copyText('${escapeHtml(
+              group.roomId || ""
+            )}')"
+          >
+            COPY
+          </button>
+
+        </div>
+
+
+        <div class="lobby-box">
+
+          <div>
+
+            <div class="lobby-label">
+              Password
+            </div>
+
+            <div class="lobby-value">
+              ${escapeHtml(
+                group.roomPassword ||
+                "WAIT"
+              )}
+            </div>
+
+          </div>
+
+
+          <button
+            class="copy-btn"
+            onclick="copyText('${escapeHtml(
+              group.roomPassword || ""
+            )}')"
+          >
+            COPY
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- MATCH INFO -->
+
+      <div class="card">
+
+        <div class="card-title">
+          Match Info
+        </div>
+
+
+        <div class="info-row">
+
+          <span class="info-label">
+            Group
+          </span>
+
+          <span class="info-value">
+            ${escapeHtml(
+              group.groupName || "-"
+            )}
+          </span>
+
+        </div>
+
+
+        <div class="info-row">
+
+          <span class="info-label">
+            Match Time
+          </span>
+
+          <span class="info-value">
+            ${escapeHtml(
+              group.matchTime || "--"
+            )}
+          </span>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    /* ==========================
+       POINTS TABLE
+    ========================== */
+
+    html += `
+
+      <div class="card">
+
+        <div class="card-title">
+          Points Table
+        </div>
+
+        ${
+          pointsTable.length === 0
+
+          ?
+
+          `
+          <div
+            style="
+              color:#64748b;
+              font-size:14px;
+              padding:10px 0;
+            "
+          >
+            Waiting for results...
+          </div>
+          `
+
+          :
+
+          `
+          <table>
+
+            <thead>
+
+              <tr>
+
+                <th>#</th>
+
+                <th>Team</th>
+
+                <th>Pts</th>
+
+                <th>Kills</th>
+
+              </tr>
+
+            </thead>
+
+
+            <tbody>
+
+              ${pointsTable.map(
+                (t,i)=>`
+
+                  <tr>
+
+                    <td class="rank">
+                      ${i+1}
+                    </td>
+
+                    <td>
+                      ${
+                        escapeHtml(
+                          t.teamName ||
+                          t.name ||
+                          t.teamId ||
+                          "Team"
+                        )
+                      }
+
+                      <span class="team-id">
+                        ${escapeHtml(
+                          t.teamId || ""
+                        )}
+                      </span>
+                    </td>
+
+                    <td>
+                      ${escapeHtml(
+                        t.totalPoints || 0
+                      )}
+                    </td>
+
+                    <td>
+                      ${escapeHtml(
+                        t.totalKills || 0
+                      )}
+                    </td>
+
+                  </tr>
+
+                `
+              ).join("")}
+
+            </tbody>
+
+          </table>
+          `
+        }
+
+      </div>
+
+    `;
+
+
+    /* ==========================
+       PARTICIPATING TEAMS
+    ========================== */
+
+    html += `
+
+      <div class="card">
+
+        <div class="card-title">
+          Participating Teams
+        </div>
+
+
+        ${
+          registrations.length === 0
+
+          ?
+
+          `
+          <div class="muted">
+            No teams yet.
+          </div>
+          `
+
+          :
+
+          registrations.map(
+            (r,i)=>`
+
+              <div class="info-row">
+
+                <span class="info-label">
+                  Slot ${i+1}
+                </span>
+
+
+                <span class="team-name">
+
+                  ${escapeHtml(
+                    r.displayTeamName ||
+                    r.teamName ||
+                    r.teamId ||
+                    "Unknown Team"
+                  )}
+
+                  <span class="team-id">
+                    ${escapeHtml(
+                      r.teamId || ""
+                    )}
+                  </span>
+
+                </span>
+
+              </div>
+
+            `
+          ).join("")
+        }
+
+      </div>
+
+    `;
+
+
+    /* ==========================
+       PROOFS SECTION
+    ========================== */
+
+    html += `
+
+      <div class="card">
+
+        <div class="card-title">
+          Proofs
+        </div>
+
+
+        <div class="proof-tabs">
+
+          <button
+            class="proof-tab active"
+            data-type="payment"
+          >
+            Payment Proof
+          </button>
+
+
+          <button
+            class="proof-tab"
+            data-type="lobby"
+          >
+            Lobby Proof
+          </button>
+
+
+          <button
+            class="proof-tab"
+            data-type="bermuda"
+          >
+            Bermuda
+          </button>
+
+
+          <button
+            class="proof-tab"
+            data-type="purgatory"
+          >
+            Purgatory
+          </button>
+
+        </div>
+
+
+        <div id="proofContent"
+             class="proof-content">
+
+          <div class="proof-empty">
+            No payment proof uploaded yet.
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    /* ==========================
+       WHATSAPP
+    ========================== */
+
+    html += `
+
+      <a
+        href="#"
+        class="whatsapp-btn"
+        onclick="
+          alert('WhatsApp Channel link not configured yet.');
+          return false;
+        "
+      >
+        Join WhatsApp Channel
+      </a>
+
+    `;
+
+
+    content.innerHTML =
+      html;
+
+
+    /*
+      Activate proof buttons
+    */
+
+    setupProofTabs();
+
+
+    /*
+      Render first proof
+    */
+
+    renderProof("payment");
+
+
+  }catch(err){
+
+    console.error(err);
+
+    content.innerHTML = `
+
+      <div class="error">
+
+        Error loading data.
+
+        <br><br>
+
+        ${escapeHtml(
+          err.message ||
+          "Unknown error"
+        )}
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* ==============================
+   START
+============================== */
+
+loadMatchRoom();
+
+</script>
+
 </body>
 </html>
