@@ -843,3 +843,123 @@ function escapeHtml(value){
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
 }
+async function createAdminGroup(){
+
+  const tournamentId =
+    document.getElementById("groupTournamentId")?.value.trim();
+
+  const groupName =
+    document.getElementById("groupNameInput")?.value.trim();
+
+  const roomId =
+    document.getElementById("groupRoomId")?.value.trim();
+
+  const roomPassword =
+    document.getElementById("groupRoomPassword")?.value.trim();
+
+  const matchTime =
+    document.getElementById("groupMatchTime")?.value;
+
+  if(!tournamentId){
+    alert("Tournament ID required");
+    return;
+  }
+
+  if(!groupName){
+    alert("Group name required");
+    return;
+  }
+
+  const r = await adminCreateGroup({
+    tournamentId: tournamentId,
+    groupName: groupName,
+    roomId: roomId || "WAIT",
+    roomPassword: roomPassword || "WAIT",
+    roomStatus: "waiting",
+    matchTime: matchTime || ""
+  });
+
+  alert(r.message || "Group created");
+
+  if(r.ok){
+    document.getElementById("groupNameInput").value="";
+    document.getElementById("groupRoomId").value="";
+    document.getElementById("groupRoomPassword").value="";
+    document.getElementById("groupMatchTime").value="";
+
+    if(typeof renderAdmin==="function"){
+      renderAdmin();
+    }
+  }
+}
+
+
+async function assignTeamToGroup(){
+
+  const groupId =
+    document.getElementById("assignGroupId")?.value.trim();
+
+  const teamId =
+    document.getElementById("assignTeamId")?.value.trim();
+
+  if(!groupId){
+    alert("Group ID required");
+    return;
+  }
+
+  if(!teamId){
+    alert("Team ID required");
+    return;
+  }
+
+  const u = getUser();
+
+  if(!u){
+    alert("Admin login required");
+    location.href="login.html";
+    return;
+  }
+
+  const r = await endEraApi("assignTeamToGroup",{
+    groupId: groupId,
+    teamId: teamId,
+    adminEmail: u.email
+  });
+
+  alert(r.message || "Team assigned");
+
+  if(r.ok){
+    document.getElementById("assignTeamId").value="";
+  }
+}
+
+
+async function updateAdminRoom(){
+
+  const groupId =
+    document.getElementById("roomGroupId")?.value.trim();
+
+  const roomId =
+    document.getElementById("roomIdInput")?.value.trim();
+
+  const roomPassword =
+    document.getElementById("roomPasswordInput")?.value.trim();
+
+  if(!groupId){
+    alert("Group ID required");
+    return;
+  }
+
+  const r = await adminUpdateRoom(groupId,{
+    roomId: roomId || "WAIT",
+    roomPassword: roomPassword || "WAIT",
+    roomStatus: "published"
+  });
+
+  alert(r.message || "Room updated");
+
+  if(r.ok){
+    document.getElementById("roomIdInput").value="";
+    document.getElementById("roomPasswordInput").value="";
+  }
+}
