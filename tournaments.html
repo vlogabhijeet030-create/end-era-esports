@@ -1,902 +1,1103 @@
-/* =========================================================
-   END ERA eSports - APP.JS
-   Tournament + Payment Registration
-   ========================================================= */
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080808">
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_adN0jivaihhqwcORVtQsWstQcqE8dImABn6lyGJFBYCA/exec";
+<title>Tournaments - END ERA eSports</title>
 
-const PAYMENT_QR = "payment-qr.jpg";
+<link rel="stylesheet" href="style.css">
 
-let tournamentsData = [];
-
-
-/* =========================
-   API
-========================= */
-
-async function callAPI(action, data = {}) {
-
-  try {
-
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        action: action,
-        ...data
-      })
-    });
-
-    const text = await response.text();
-
-    if (!text || text.trim().startsWith("<!")) {
-      throw new Error("Invalid API response");
-    }
-
-    return JSON.parse(text);
-
-  } catch (error) {
-
-    console.error("API ERROR:", error);
-
-    return {
-      ok: false,
-      message: "Server connection failed"
-    };
-
-  }
+<style>
+.tournament-card{
+  position:relative;
+  overflow:hidden;
 }
 
+.tournament-card .paid-badge{
+  display:inline-block;
+  margin-bottom:12px;
+  padding:6px 10px;
+  border-radius:20px;
+  background:rgba(217,171,67,.12);
+  border:1px solid rgba(217,171,67,.35);
+  color:#d9ab43;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+}
 
-/* =========================
-   HTML ESCAPE
-========================= */
+.tournament-card .free-badge{
+  display:inline-block;
+  margin-bottom:12px;
+  padding:6px 10px;
+  border-radius:20px;
+  background:rgba(34,197,94,.10);
+  border:1px solid rgba(34,197,94,.3);
+  color:#4ade80;
+  font-size:11px;
+  font-weight:800;
+}
 
-function escapeHtml(value) {
+.tournament-card h2{
+  margin:8px 0 18px;
+}
+
+.tournament-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:15px 0;
+}
+
+.tournament-info div{
+  background:#0b0b0b;
+  border:1px solid #292929;
+  border-radius:9px;
+  padding:11px;
+}
+
+.tournament-info small{
+  display:block;
+  color:#777;
+  font-size:10px;
+  margin-bottom:4px;
+}
+
+.tournament-info b{
+  color:#eee;
+  font-size:14px;
+}
+
+.register-btn{
+  width:100%;
+}
+
+.disabled-btn{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.82);
+  padding:20px;
+  overflow-y:auto;
+}
+
+.modal.show{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-box{
+  width:min(480px,100%);
+  max-height:95vh;
+  overflow-y:auto;
+  background:#111;
+  border:1px solid #343434;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 20px 80px rgba(0,0,0,.6);
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.modal-head h2{
+  margin:0;
+}
+
+.close-btn{
+  width:36px;
+  height:36px;
+  padding:0;
+  margin:0;
+  border:1px solid #333;
+  background:#191919;
+  color:#fff;
+  border-radius:9px;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.payment-box{
+  margin:15px 0;
+  padding:16px;
+  background:#0a0a0a;
+  border:1px solid #332a18;
+  border-radius:14px;
+  text-align:center;
+}
+
+.payment-box h3{
+  color:#d9ab43;
+  margin:0 0 5px;
+}
+
+.payment-amount{
+  font-size:28px;
+  font-weight:900;
+  color:#fff;
+  margin:8px 0 14px;
+}
+
+.qr-wrap{
+  width:220px;
+  height:220px;
+  margin:0 auto 14px;
+  padding:10px;
+  background:#fff;
+  border-radius:12px;
+}
+
+.qr-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+.upi-box{
+  background:#111;
+  border:1px solid #292929;
+  border-radius:9px;
+  padding:11px;
+  color:#d9ab43;
+  font-weight:800;
+  word-break:break-all;
+}
+
+.notice{
+  padding:12px;
+  margin:12px 0;
+  border-radius:9px;
+  background:#17130b;
+  border:1px solid #3d3019;
+  color:#b9a77b;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.success-msg,
+.error-msg{
+  display:none;
+  padding:11px;
+  border-radius:9px;
+  margin-top:10px;
+  font-size:13px;
+}
+
+.success-msg{
+  background:#0d2d1b;
+  color:#86efac;
+}
+
+.error-msg{
+  background:#3b0b0b;
+  color:#fca5a5;
+}
+
+.success-msg.show,
+.error-msg.show{
+  display:block;
+}
+
+.empty{
+  grid-column:1/-1;
+  padding:30px;
+  text-align:center;
+  color:#777;
+}
+
+@media(max-width:600px){
+  .modal{
+    padding:10px;
+  }
+
+  .modal-box{
+    padding:18px;
+  }
+
+  .qr-wrap{
+    width:200px;
+    height:200px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<a class="logo" href="index.html">
+END ERA
+<small>eSports</small>
+</a>
+
+<nav>
+<a href="index.html">Home</a>
+<a class="active" href="tournaments.html">Tournaments</a>
+<a href="scrims.html">Scrims</a>
+<a href="team.html">My Team</a>
+<a href="results.html">Results</a>
+<a href="login.html">Login</a>
+</nav>
+
+<button
+type="button"
+onclick="menu()"
+aria-label="Menu">
+☰
+</button>
+
+</header>
+
+
+<main>
+
+<section class="page">
+
+<p class="gold">
+COMPETE
+</p>
+
+<h1>
+TOURNAMENTS
+</h1>
+
+<div class="tabs">
+
+<button type="button" onclick="showT('all')">
+All
+</button>
+
+<button type="button" onclick="showT('free')">
+Free
+</button>
+
+<button type="button" onclick="showT('paid')">
+Paid
+</button>
+
+</div>
+
+
+<div id="tournaments" class="grid">
+
+<div class="empty">
+Loading tournaments...
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<footer>
+END ERA eSports
+</footer>
+
+
+<!-- REGISTER MODAL -->
+
+<div
+id="registerModal"
+class="modal"
+onclick="closeModalOutside(event)">
+
+<div class="modal-box">
+
+<div class="modal-head">
+
+<h2>Register Tournament</h2>
+
+<button
+class="close-btn"
+type="button"
+onclick="closeRegister()">
+×
+</button>
+
+</div>
+
+
+<div id="registerTournamentInfo"></div>
+
+
+<!-- PAYMENT -->
+
+<div
+id="paymentSection"
+class="payment-box"
+style="display:none;">
+
+<h3>PAYMENT</h3>
+
+<div
+id="paymentAmount"
+class="payment-amount">
+₹0
+</div>
+
+<div class="qr-wrap">
+
+<img
+src="payment-qr.png"
+alt="END ERA Payment QR"
+onerror="this.style.display='none';document.getElementById('qrError').style.display='block';">
+
+<div
+id="qrError"
+style="display:none;color:#991b1b;padding:50px 10px;font-size:13px;">
+QR image not found
+</div>
+
+</div>
+
+
+<div class="upi-box">
+UPI ID:
+<span id="upiId">
+ADD_YOUR_UPI_ID
+</span>
+</div>
+
+<div class="notice">
+Pay the exact entry fee using the QR/UPI above.
+After payment, enter your UTR / Transaction ID below.
+</div>
+
+</div>
+
+
+<label>
+Team ID
+</label>
+
+<input
+id="registerTeamId"
+placeholder="TEAM_xxxxx"
+autocomplete="off">
+
+
+<label>
+UTR / Transaction ID
+</label>
+
+<input
+id="registerUTR"
+placeholder="Enter payment UTR"
+autocomplete="off">
+
+
+<button
+id="confirmRegisterBtn"
+class="btn full"
+type="button"
+onclick="submitTournamentRegistration()">
+SUBMIT REGISTRATION
+</button>
+
+
+<div
+id="registerSuccess"
+class="success-msg">
+</div>
+
+<div
+id="registerError"
+class="error-msg">
+</div>
+
+</div>
+
+</div>
+
+
+<script src="app.js"></script>
+
+
+<script>
+
+/*
+====================================================
+END ERA TOURNAMENT PAYMENT SETTINGS
+====================================================
+*/
+
+const PAYMENT_UPI_ID = "8433414339@fam";
+
+
+/*
+====================================================
+STATE
+====================================================
+*/
+
+let selectedTournament = null;
+
+
+/*
+====================================================
+ESCAPE HTML
+====================================================
+*/
+
+function safeHTML(value){
 
   return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
 }
 
 
-/* =========================
-   MENU
-========================= */
+/*
+====================================================
+OPEN REGISTER
+====================================================
+*/
 
-function menu() {
+function openRegister(tournament){
 
-  const nav = document.querySelector("header nav");
+  selectedTournament = tournament;
 
-  if (nav) {
-    nav.classList.toggle("show");
+  document.getElementById("registerModal")
+    .classList.add("show");
+
+  document.getElementById("registerTeamId").value = "";
+  document.getElementById("registerUTR").value = "";
+
+  document.getElementById("registerSuccess")
+    .classList.remove("show");
+
+  document.getElementById("registerError")
+    .classList.remove("show");
+
+
+  const fee = Number(
+    tournament.entryFee || 0
+  );
+
+
+  document.getElementById(
+    "registerTournamentInfo"
+  ).innerHTML = `
+
+    <div class="notice">
+
+      <b>${safeHTML(tournament.name || "Tournament")}</b>
+
+      <br>
+
+      ${safeHTML(tournament.map || "Bermuda")}
+
+      •
+
+      ${safeHTML(tournament.matchTime || "TBA")}
+
+    </div>
+
+  `;
+
+
+  const paymentSection =
+    document.getElementById("paymentSection");
+
+
+  const amount =
+    document.getElementById("paymentAmount");
+
+
+  const upi =
+    document.getElementById("upiId");
+
+
+  if(fee > 0){
+
+    paymentSection.style.display = "block";
+
+    amount.textContent =
+      "₹" + fee;
+
+    upi.textContent =
+      PAYMENT_UPI_ID;
+
+  }else{
+
+    paymentSection.style.display = "none";
+
   }
 
 }
 
 
-/* =========================
-   LOAD TOURNAMENTS
-========================= */
+/*
+====================================================
+CLOSE MODAL
+====================================================
+*/
 
-async function loadTournaments() {
+function closeRegister(){
 
-  const box = document.getElementById("tournaments");
+  document.getElementById("registerModal")
+    .classList.remove("show");
 
-  if (!box) return;
+  selectedTournament = null;
+
+}
+
+
+function closeModalOutside(event){
+
+  if(event.target.id === "registerModal"){
+    closeRegister();
+  }
+
+}
+
+
+/*
+====================================================
+SHOW MESSAGE
+====================================================
+*/
+
+function registerMessage(
+  type,
+  message
+){
+
+  const success =
+    document.getElementById("registerSuccess");
+
+  const error =
+    document.getElementById("registerError");
+
+
+  success.classList.remove("show");
+  error.classList.remove("show");
+
+
+  if(type === "success"){
+
+    success.textContent = message;
+    success.classList.add("show");
+
+  }else{
+
+    error.textContent = message;
+    error.classList.add("show");
+
+  }
+
+}
+
+
+/*
+====================================================
+SUBMIT REGISTRATION
+====================================================
+*/
+
+async function submitTournamentRegistration(){
+
+  if(!selectedTournament){
+
+    registerMessage(
+      "error",
+      "Tournament not selected."
+    );
+
+    return;
+  }
+
+
+  const teamId =
+    document.getElementById(
+      "registerTeamId"
+    ).value.trim();
+
+
+  const utr =
+    document.getElementById(
+      "registerUTR"
+    ).value.trim();
+
+
+  if(!teamId){
+
+    registerMessage(
+      "error",
+      "Team ID required."
+    );
+
+    return;
+  }
+
+
+  const fee =
+    Number(selectedTournament.entryFee || 0);
+
+
+  if(fee > 0 && !utr){
+
+    registerMessage(
+      "error",
+      "Payment UTR / Transaction ID required."
+    );
+
+    return;
+  }
+
+
+  const button =
+    document.getElementById(
+      "confirmRegisterBtn"
+    );
+
+
+  button.disabled = true;
+  button.textContent = "SUBMITTING...";
+
+
+  try{
+
+    /*
+      This uses the existing app.js API function
+      if available.
+    */
+
+    if(typeof callAPI !== "function"){
+
+      throw new Error(
+        "API function not found. Check app.js."
+      );
+
+    }
+
+
+    const response =
+      await callAPI(
+        "registerTeam",
+        {
+
+          tournamentId:
+            selectedTournament.tournamentId,
+
+          teamId:
+            teamId,
+
+          paymentUtr:
+            utr,
+
+          utr:
+            utr,
+
+          paymentStatus:
+            fee > 0
+            ? "submitted"
+            : "free",
+
+          status:
+            "pending"
+
+        }
+      );
+
+
+    if(!response || !response.ok){
+
+      throw new Error(
+        response?.message ||
+        "Registration failed."
+      );
+
+    }
+
+
+    registerMessage(
+      "success",
+      "Registration submitted successfully. Admin approval is pending."
+    );
+
+
+    button.textContent =
+      "REGISTRATION SUBMITTED";
+
+
+  }catch(error){
+
+    console.error(error);
+
+    registerMessage(
+      "error",
+      error.message ||
+      "Unable to submit registration."
+    );
+
+
+    button.disabled = false;
+    button.textContent =
+      "SUBMIT REGISTRATION";
+
+  }
+
+}
+
+
+/*
+====================================================
+TOURNAMENT CARD
+====================================================
+*/
+
+function buildTournamentCard(t){
+
+  const fee =
+    Number(t.entryFee || 0);
+
+
+  const isPaid =
+    fee > 0;
+
+
+  const registrationOpen =
+    t.registrationOpen === true ||
+    String(
+      t.registrationOpen
+    ).toLowerCase() === "true";
+
+
+  const activeSlots =
+    Number(
+      t.registeredTeams ||
+      t.teamCount ||
+      0
+    );
+
+
+  const maxTeams =
+    Number(
+      t.maxTeams ||
+      12
+    );
+
+
+  const full =
+    activeSlots >= maxTeams;
+
+
+  let buttonText =
+    "REGISTER NOW";
+
+
+  let disabled = false;
+
+
+  if(!registrationOpen){
+
+    buttonText =
+      "REGISTRATION CLOSED";
+
+    disabled = true;
+
+  }
+
+
+  if(full){
+
+    buttonText =
+      "SLOTS FULL";
+
+    disabled = true;
+
+  }
+
+
+  const tournamentJSON =
+    JSON.stringify(t)
+      .replace(/\\/g,"\\\\")
+      .replace(/'/g,"\\'")
+      .replace(/"/g,"&quot;");
+
+
+  return `
+
+    <article class="card tournament-card">
+
+      <span class="${
+        isPaid
+        ? "paid-badge"
+        : "free-badge"
+      }">
+
+        ${
+          isPaid
+          ? "PAID TOURNAMENT"
+          : "FREE TOURNAMENT"
+        }
+
+      </span>
+
+
+      <h2>
+        ${safeHTML(
+          t.name ||
+          t.tournamentName ||
+          "END ERA Tournament"
+        )}
+      </h2>
+
+
+      <div class="tournament-info">
+
+        <div>
+          <small>ENTRY</small>
+          <b>
+            ${
+              isPaid
+              ? "₹" + fee
+              : "FREE"
+            }
+          </b>
+        </div>
+
+
+        <div>
+          <small>PRIZE POOL</small>
+          <b>
+            ₹${safeHTML(t.prize || "0")}
+          </b>
+        </div>
+
+
+        <div>
+          <small>MAP</small>
+          <b>
+            ${safeHTML(t.map || "Bermuda")}
+          </b>
+        </div>
+
+
+        <div>
+          <small>SLOTS</small>
+          <b>
+            ${activeSlots}/${maxTeams}
+          </b>
+        </div>
+
+      </div>
+
+
+      <div class="meta">
+
+        <div>
+          MATCH TIME
+          <b>
+            ${safeHTML(
+              t.matchTime || "TBA"
+            )}
+          </b>
+        </div>
+
+        <div>
+          TYPE
+          <b>
+            ${safeHTML(
+              t.type || "Scrim"
+            )}
+          </b>
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn register-btn ${
+          disabled
+          ? "disabled-btn"
+          : ""
+        }"
+        type="button"
+        ${
+          disabled
+          ? "disabled"
+          : `onclick='openRegister(${tournamentJSON})'`
+        }>
+
+        ${buttonText}
+
+      </button>
+
+    </article>
+
+  `;
+
+}
+
+
+/*
+====================================================
+OVERRIDE SHOW T
+====================================================
+*/
+
+async function showT(filter="all"){
+
+  const box =
+    document.getElementById(
+      "tournaments"
+    );
+
+
+  if(!box) return;
+
 
   box.innerHTML = `
-    <div class="loading-card">
+    <div class="empty">
       Loading tournaments...
     </div>
   `;
 
-  const result = await callAPI("getTournaments");
 
-  if (!result.ok) {
+  try{
 
-    box.innerHTML = `
-      <div class="card">
-        Unable to load tournaments.
-      </div>
-    `;
+    let list = [];
 
-    return;
-  }
 
-  tournamentsData = result.tournaments || [];
+    /*
+      Existing app.js loader.
+    */
 
-  renderTournamentCards(tournamentsData);
+    if(typeof getTournaments === "function"){
 
-}
+      const result =
+        await getTournaments();
 
+      list =
+        Array.isArray(result)
+        ? result
+        : (
+          result?.tournaments ||
+          []
+        );
 
-/* =========================
-   RENDER TOURNAMENTS
-========================= */
+    }else if(
+      typeof callAPI === "function"
+    ){
 
-function renderTournamentCards(list) {
+      const result =
+        await callAPI(
+          "getTournaments"
+        );
 
-  const box = document.getElementById("tournaments");
+      list =
+        result?.tournaments ||
+        [];
 
-  if (!box) return;
+    }else{
 
-  if (!list.length) {
-
-    box.innerHTML = `
-      <div class="card">
-        <h2>No tournaments available</h2>
-        <p class="muted">
-          Check again soon for upcoming matches.
-        </p>
-      </div>
-    `;
-
-    return;
-  }
-
-  box.innerHTML = list.map(t => {
-
-    const fee = Number(t.entryFee || 0);
-
-    const isFree = fee <= 0;
-
-    const open =
-      t.registrationOpen === true ||
-      String(t.registrationOpen).toLowerCase() === "true";
-
-    return `
-
-      <article class="card tournament-card">
-
-        <div class="tag">
-          ${isFree ? "FREE ENTRY" : "PAID SCRIM"}
-        </div>
-
-        <h2>
-          ${escapeHtml(t.name || "Tournament")}
-        </h2>
-
-        <div class="meta">
-
-          <div>
-            ENTRY
-            <b>
-              ${isFree ? "FREE" : "₹" + fee}
-            </b>
-          </div>
-
-          <div>
-            PRIZE
-            <b>
-              ₹${escapeHtml(t.prize || "0")}
-            </b>
-          </div>
-
-          <div>
-            MAP
-            <b>
-              ${escapeHtml(t.map || "Bermuda")}
-            </b>
-          </div>
-
-          <div>
-            TIME
-            <b>
-              ${escapeHtml(t.matchTime || "TBA")}
-            </b>
-          </div>
-
-        </div>
-
-        <div style="margin-top:15px">
-
-          ${
-            open
-
-            ?
-
-            `
-            <button
-              class="btn btn-primary full"
-              onclick="openRegistration('${escapeHtml(t.tournamentId)}')">
-
-              REGISTER NOW →
-
-            </button>
-            `
-
-            :
-
-            `
-            <button
-              class="btn full"
-              disabled
-              style="opacity:.5">
-
-              REGISTRATION CLOSED
-
-            </button>
-            `
-          }
-
-        </div>
-
-      </article>
-
-    `;
-
-  }).join("");
-
-}
-
-
-/* =========================
-   FILTER
-========================= */
-
-function showT(type) {
-
-  if (!tournamentsData.length) {
-
-    loadTournaments();
-
-    return;
-  }
-
-  let filtered = tournamentsData;
-
-  if (type === "free") {
-
-    filtered = tournamentsData.filter(t =>
-      Number(t.entryFee || 0) <= 0
-    );
-
-  }
-
-  if (type === "paid") {
-
-    filtered = tournamentsData.filter(t =>
-      Number(t.entryFee || 0) > 0
-    );
-
-  }
-
-  renderTournamentCards(filtered);
-
-}
-
-
-/* =========================
-   REGISTRATION MODAL
-========================= */
-
-function openRegistration(tournamentId) {
-
-  const tournament =
-    tournamentsData.find(
-      t => String(t.tournamentId) === String(tournamentId)
-    );
-
-  if (!tournament) {
-
-    alert("Tournament not found.");
-
-    return;
-  }
-
-  const fee = Number(tournament.entryFee || 0);
-
-  const old = document.getElementById("paymentModal");
-
-  if (old) old.remove();
-
-  const modal = document.createElement("div");
-
-  modal.id = "paymentModal";
-
-  modal.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.85);
-    z-index:9999;
-    overflow:auto;
-    padding:20px;
-  `;
-
-  modal.innerHTML = `
-
-    <div style="
-      max-width:480px;
-      margin:30px auto;
-      background:#101010;
-      border:1px solid #292929;
-      border-radius:18px;
-      padding:22px;
-    ">
-
-      <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        margin-bottom:18px;
-      ">
-
-        <div>
-
-          <div style="
-            color:#d9ab43;
-            font-size:11px;
-            letter-spacing:2px;
-            font-weight:bold;
-          ">
-            REGISTRATION
-          </div>
-
-          <h2 style="margin-top:6px">
-            ${escapeHtml(tournament.name)}
-          </h2>
-
-        </div>
-
-        <button
-          onclick="closeRegistration()"
-          style="
-            background:#222;
-            border:0;
-            color:white;
-            width:38px;
-            height:38px;
-            border-radius:50%;
-            font-size:20px;
-          ">
-          ×
-        </button>
-
-      </div>
-
-
-      <div style="
-        background:#080808;
-        border:1px solid #292929;
-        border-radius:12px;
-        padding:16px;
-        text-align:center;
-        margin-bottom:18px;
-      ">
-
-        <div style="
-          color:#888;
-          font-size:12px;
-        ">
-          ENTRY FEE
-        </div>
-
-        <div style="
-          color:#d9ab43;
-          font-size:30px;
-          font-weight:900;
-          margin:5px 0 15px;
-        ">
-          ${fee > 0 ? "₹" + fee : "FREE"}
-        </div>
-
-        ${
-          fee > 0
-
-          ?
-
-          `
-          <div style="
-            background:white;
-            border-radius:12px;
-            padding:10px;
-            display:inline-block;
-          ">
-
-            <img
-              src="${PAYMENT_QR}"
-              alt="Payment QR"
-              style="
-                width:230px;
-                max-width:100%;
-                display:block;
-              "
-              onerror="
-                this.parentElement.innerHTML=
-                '<div style=&quot;color:#222;padding:50px 20px&quot;>Payment QR not found</div>';
-              "
-            >
-
-          </div>
-
-          <p style="
-            color:#aaa;
-            font-size:12px;
-            margin-top:12px;
-            line-height:1.5;
-          ">
-            Scan the QR and pay ₹${fee}.
-            After payment, enter your UTR / Transaction ID below.
-          </p>
-          `
-
-          :
-
-          `
-          <p style="color:#4ade80">
-            No payment required.
-          </p>
-          `
-        }
-
-      </div>
-
-
-      <label>
-        Team ID
-      </label>
-
-      <input
-        id="paymentTeamId"
-        placeholder="TEAM_xxxxx"
-      >
-
-
-      ${
-        fee > 0
-
-        ?
-
-        `
-
-        <label>
-          UTR / Transaction ID
-        </label>
-
-        <input
-          id="paymentUTR"
-          placeholder="Enter UTR / Transaction ID"
-        >
-
-
-        <label>
-          Payment Screenshot
-        </label>
-
-        <input
-          id="paymentScreenshot"
-          type="file"
-          accept="image/*"
-        >
-
-        <div id="paymentPreview"
-          style="margin-top:10px">
-        </div>
-
-        `
-
-        :
-
-        ""
-      }
-
-
-      <button
-        class="btn btn-primary full"
-        onclick="submitTournamentRegistration(
-          '${escapeHtml(tournament.tournamentId)}',
-          ${fee}
-        )">
-
-        ${fee > 0
-          ? "PAYMENT DONE • REGISTER"
-          : "REGISTER NOW"}
-
-      </button>
-
-
-      <button
-        onclick="closeRegistration()"
-        style="
-          width:100%;
-          margin-top:10px;
-          padding:12px;
-          background:#222;
-          color:#aaa;
-          border:1px solid #333;
-          border-radius:8px;
-        ">
-
-        CANCEL
-
-      </button>
-
-
-      <div
-        id="paymentMessage"
-        style="
-          margin-top:12px;
-          font-size:13px;
-          text-align:center;
-        ">
-      </div>
-
-    </div>
-
-  `;
-
-  document.body.appendChild(modal);
-
-
-  const screenshot =
-    document.getElementById("paymentScreenshot");
-
-  if (screenshot) {
-
-    screenshot.addEventListener(
-      "change",
-      previewPaymentImage
-    );
-
-  }
-
-}
-
-
-/* =========================
-   CLOSE MODAL
-========================= */
-
-function closeRegistration() {
-
-  const modal =
-    document.getElementById("paymentModal");
-
-  if (modal) {
-    modal.remove();
-  }
-
-}
-
-
-/* =========================
-   PAYMENT IMAGE PREVIEW
-========================= */
-
-function previewPaymentImage(event) {
-
-  const file = event.target.files[0];
-
-  const preview =
-    document.getElementById("paymentPreview");
-
-  if (!file || !preview) return;
-
-  if (!file.type.startsWith("image/")) {
-
-    preview.innerHTML =
-      `<span style="color:#f87171">
-        Please select an image.
-      </span>`;
-
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = function(e) {
-
-    preview.innerHTML = `
-
-      <img
-        src="${e.target.result}"
-        style="
-          width:100%;
-          max-height:220px;
-          object-fit:contain;
-          border-radius:10px;
-          border:1px solid #292929;
-        "
-      >
-
-    `;
-
-  };
-
-  reader.readAsDataURL(file);
-
-}
-
-
-/* =========================
-   SUBMIT REGISTRATION
-========================= */
-
-async function submitTournamentRegistration(
-  tournamentId,
-  fee
-) {
-
-  const teamId =
-    document.getElementById("paymentTeamId")
-      ?.value.trim();
-
-  const message =
-    document.getElementById("paymentMessage");
-
-  if (!teamId) {
-
-    message.innerHTML =
-      `<span style="color:#f87171">
-        Team ID required.
-      </span>`;
-
-    return;
-  }
-
-
-  let utr = "";
-  let screenshotBase64 = "";
-
-
-  if (fee > 0) {
-
-    utr =
-      document.getElementById("paymentUTR")
-        ?.value.trim();
-
-    const file =
-      document.getElementById("paymentScreenshot")
-        ?.files[0];
-
-
-    if (!utr) {
-
-      message.innerHTML =
-        `<span style="color:#f87171">
-          UTR / Transaction ID required.
-        </span>`;
-
-      return;
-    }
-
-
-    if (!file) {
-
-      message.innerHTML =
-        `<span style="color:#f87171">
-          Payment screenshot required.
-        </span>`;
-
-      return;
-    }
-
-
-    message.innerHTML =
-      `<span style="color:#d9ab43">
-        Preparing payment proof...
-      </span>`;
-
-
-    screenshotBase64 =
-      await fileToBase64(file);
-
-  }
-
-
-  message.innerHTML =
-    `<span style="color:#d9ab43">
-      Submitting registration...
-    </span>`;
-
-
-  /*
-    IMPORTANT:
-    Code.gs must support:
-    registerTeamWithPayment
-  */
-
-  const result =
-    await callAPI(
-      "registerTeamWithPayment",
-      {
-        tournamentId: tournamentId,
-        teamId: teamId,
-        utr: utr,
-        paymentScreenshot: screenshotBase64
-      }
-    );
-
-
-  if (!result.ok) {
-
-    message.innerHTML =
-      `<span style="color:#f87171">
-        ${escapeHtml(
-          result.message || "Registration failed"
-        )}
-      </span>`;
-
-    return;
-  }
-
-
-  message.innerHTML =
-    `<span style="color:#4ade80">
-      Registration submitted successfully.
-    </span>`;
-
-
-  setTimeout(() => {
-
-    closeRegistration();
-
-    alert(
-      result.message ||
-      "Registration submitted. Waiting for admin approval."
-    );
-
-  }, 1000);
-
-}
-
-
-/* =========================
-   FILE TO BASE64
-========================= */
-
-function fileToBase64(file) {
-
-  return new Promise((resolve,reject) => {
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-
-      const result = String(reader.result || "");
-
-      /*
-        Remove:
-        data:image/jpeg;base64,
-        */
-
-      const comma =
-        result.indexOf(",");
-
-      resolve(
-        comma >= 0
-          ? result.substring(comma + 1)
-          : result
+      throw new Error(
+        "Tournament API not found."
       );
 
-    };
-
-    reader.onerror = reject;
-
-    reader.readAsDataURL(file);
-
-  });
-
-}
+    }
 
 
-/* =========================
-   HOME PAGE MATCHES
-========================= */
+    if(filter === "paid"){
 
-async function renderMatches() {
+      list =
+        list.filter(
+          t => Number(
+            t.entryFee || 0
+          ) > 0
+        );
 
-  const box =
-    document.getElementById("matches");
+    }
 
-  if (!box) return;
 
-  const result =
-    await callAPI("getTournaments");
+    if(filter === "free"){
 
-  if (!result.ok) {
+      list =
+        list.filter(
+          t => Number(
+            t.entryFee || 0
+          ) <= 0
+        );
 
-    box.innerHTML = `
-      <div class="card">
-        Unable to load matches.
-      </div>
-    `;
+    }
 
-    return;
-  }
 
-  const list =
-    (result.tournaments || []).slice(0,6);
+    if(!list.length){
 
-  if (!list.length) {
-
-    box.innerHTML = `
-      <div class="card">
-        <h2>No upcoming matches</h2>
-        <p class="muted">
-          New competitions will appear here.
-        </p>
-      </div>
-    `;
-
-    return;
-  }
-
-  box.innerHTML = list.map(t => {
-
-    const fee =
-      Number(t.entryFee || 0);
-
-    return `
-
-      <div class="card">
-
-        <span class="tag">
-          ${fee > 0 ? "PAID" : "FREE"}
-        </span>
-
-        <h2>
-          ${escapeHtml(t.name || "Tournament")}
-        </h2>
-
-        <div class="meta">
-
-          <div>
-            ENTRY
-            <b>
-              ${fee > 0 ? "₹"+fee : "FREE"}
-            </b>
-          </div>
-
-          <div>
-            PRIZE
-            <b>
-              ₹${escapeHtml(t.prize || "0")}
-            </b>
-          </div>
-
+      box.innerHTML = `
+        <div class="empty">
+          No tournaments available.
         </div>
+      `;
 
-        <a
-          class="btn full"
-          href="tournaments.html">
+      return;
 
-          VIEW TOURNAMENT →
+    }
 
-        </a>
 
+    box.innerHTML =
+      list.map(
+        buildTournamentCard
+      ).join("");
+
+
+  }catch(error){
+
+    console.error(error);
+
+    box.innerHTML = `
+      <div class="empty">
+        Unable to load tournaments.
+        <br><br>
+        ${safeHTML(error.message)}
       </div>
-
     `;
 
-  }).join("");
+  }
 
 }
 
 
-/* =========================
-   AUTO LOAD
-========================= */
+/*
+====================================================
+PAGE LOAD
+====================================================
+*/
 
 document.addEventListener(
   "DOMContentLoaded",
-  function() {
+  function(){
 
-    if (
-      document.getElementById("tournaments")
-    ) {
-
-      loadTournaments();
-
-    }
+    showT("all");
 
   }
 );
+
+</script>
+
+</body>
+</html>
