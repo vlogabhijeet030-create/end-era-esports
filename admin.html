@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,32 +7,182 @@
 
 <style>
 *{box-sizing:border-box;font-family:system-ui,sans-serif}
-body{margin:0;background:#080c14;color:#e5e7eb;padding:16px}
-.container{max-width:650px;margin:auto}
-h1{font-size:24px;margin:0}
-h2{font-size:17px;color:#38bdf8;margin:0 0 14px}
-.subtitle,.muted{color:#94a3b8;font-size:13px}
-.card{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:16px;margin:15px 0}
-label{display:block;font-size:12px;color:#94a3b8;margin:10px 0 5px}
-input,select{width:100%;padding:11px;border-radius:8px;border:1px solid #263244;background:#0b1220;color:#fff}
-button{width:100%;padding:11px;margin-top:10px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700}
+
+body{
+margin:0;
+background:#080c14;
+color:#e5e7eb;
+padding:16px
+}
+
+.container{
+max-width:650px;
+margin:auto
+}
+
+h1{
+margin:0;
+font-size:25px
+}
+
+.subtitle{
+color:#94a3b8;
+margin:5px 0 20px
+}
+
+.card{
+background:#111827;
+border:1px solid #1e293b;
+border-radius:16px;
+padding:16px;
+margin-bottom:16px
+}
+
+h2{
+font-size:17px;
+color:#38bdf8;
+margin:0 0 14px
+}
+
+label{
+display:block;
+font-size:12px;
+color:#94a3b8;
+margin:11px 0 5px
+}
+
+input,select{
+width:100%;
+padding:12px;
+border-radius:9px;
+border:1px solid #263244;
+background:#0b1220;
+color:white;
+outline:none
+}
+
+input:focus,select:focus{
+border-color:#38bdf8
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:12px;
+border:0;
+border-radius:9px;
+background:#2563eb;
+color:white;
+font-weight:700;
+cursor:pointer
+}
+
 .green{background:#16a34a}
 .red{background:#dc2626}
 .gray{background:#334155}
 .yellow{background:#ca8a04}
-.msg{padding:10px;border-radius:8px;margin-top:10px;font-size:13px}
-.success{background:#14532d;color:#86efac}
-.error{background:#450a0a;color:#fca5a5}
-.item{background:#0b1220;border:1px solid #1e293b;border-radius:10px;padding:12px;margin-top:10px}
-.row{display:flex;gap:8px;align-items:center;margin-top:8px}
-.small{width:auto;margin:0;padding:8px 12px;font-size:12px}
-.slot{font-size:20px;font-weight:800;margin:10px 0}
-.open{color:#4ade80;font-weight:700}
-.closed{color:#f87171;font-weight:700}
-.pending{color:#facc15;font-weight:700}
-.confirmed{color:#4ade80;font-weight:700}
-.rejected{color:#f87171;font-weight:700}
-.team{padding:10px;border:1px solid #263244;border-radius:8px;margin-top:7px}
+
+.msg{
+display:none;
+padding:11px;
+border-radius:9px;
+margin-top:10px;
+font-size:13px
+}
+
+.success{
+display:block;
+background:#14532d;
+color:#86efac
+}
+
+.error{
+display:block;
+background:#450a0a;
+color:#fca5a5
+}
+
+.item{
+background:#0b1220;
+border:1px solid #1e293b;
+border-radius:11px;
+padding:13px;
+margin-top:10px
+}
+
+.item b{
+color:#38bdf8
+}
+
+.row{
+display:flex;
+gap:7px;
+align-items:center;
+margin-top:9px
+}
+
+.smallbtn{
+width:auto;
+margin:0;
+padding:8px 11px;
+font-size:12px
+}
+
+.slot{
+font-size:20px;
+font-weight:800;
+margin:10px 0;
+color:#fff
+}
+
+.muted{
+color:#64748b;
+font-size:13px
+}
+
+.team-name{
+font-size:16px;
+font-weight:700;
+color:#fff
+}
+
+.team-id{
+font-size:11px;
+color:#64748b;
+margin-top:3px
+}
+
+.badge{
+display:inline-block;
+padding:4px 8px;
+border-radius:20px;
+font-size:11px;
+font-weight:700;
+margin-top:7px
+}
+
+.open{
+background:#14532d;
+color:#86efac
+}
+
+.closed{
+background:#450a0a;
+color:#fca5a5
+}
+
+.proof-link{
+display:block;
+margin-top:7px;
+color:#60a5fa;
+text-decoration:none
+}
+
+hr{
+border:0;
+border-top:1px solid #1e293b;
+margin:15px 0
+}
 </style>
 </head>
 
@@ -41,14 +191,17 @@ button{width:100%;padding:11px;margin-top:10px;border:0;border-radius:8px;backgr
 <div class="container">
 
 <h1>END ERA Admin</h1>
-<p class="subtitle">Tournament • Registration • Group • Team • Room Control</p>
+<p class="subtitle">Tournament • Registration • Groups • Rooms • Results</p>
+
 
 <!-- CREATE TOURNAMENT -->
+
 <div class="card">
+
 <h2>Create Tournament</h2>
 
-<label>Name</label>
-<input id="tName" placeholder="END ERA SCRIM">
+<label>Tournament Name</label>
+<input id="tName" placeholder="END ERA 12 TEAM SCRIM">
 
 <label>Type</label>
 <select id="tType">
@@ -60,48 +213,97 @@ button{width:100%;padding:11px;margin-top:10px;border:0;border-radius:8px;backgr
 <label>Entry Fee</label>
 <input id="tFee" placeholder="10">
 
-<label>Prize</label>
+<label>Prize Pool</label>
 <input id="tPrize" placeholder="120">
 
 <label>Map</label>
-<input id="tMap" placeholder="Bermuda">
+<input id="tMap" value="Bermuda">
 
 <label>Match Time</label>
 <input id="tTime" placeholder="10 Aug, 8:00 PM">
 
 <button onclick="createTournament()">CREATE TOURNAMENT</button>
-<div id="tMsg"></div>
+
+<div id="tMsg" class="msg"></div>
+
 </div>
 
+
 <!-- TOURNAMENTS -->
+
 <div class="card">
+
 <h2>Tournaments</h2>
 
-<button class="gray" onclick="loadTournaments()">REFRESH</button>
+<button class="gray" onclick="loadTournaments()">
+REFRESH
+</button>
 
 <div id="tournamentList">
 <p class="muted">Loading...</p>
 </div>
+
 </div>
 
-<!-- REGISTRATIONS -->
+
+<!-- TEAM CREATE -->
+
 <div class="card">
+
+<h2>Create Team</h2>
+
+<label>Team Name</label>
+<input id="teamName" placeholder="END ERA ESPORTS">
+
+<label>Leader Name</label>
+<input id="leaderName" placeholder="Leader">
+
+<label>Leader Phone</label>
+<input id="leaderPhone" placeholder="9876543210">
+
+<label>Members</label>
+<input id="members" placeholder="Player 1, Player 2, Player 3, Player 4">
+
+<label>UPI ID</label>
+<input id="upiId" placeholder="team@upi">
+
+<button class="green" onclick="createTeam()">
+CREATE TEAM
+</button>
+
+<div id="teamMsg" class="msg"></div>
+
+</div>
+
+
+<!-- REGISTRATION -->
+
+<div class="card">
+
 <h2>Team Registrations</h2>
 
 <label>Tournament ID</label>
 <input id="regTournamentId" placeholder="TNT_xxxxx">
 
-<button onclick="loadRegistrations()">LOAD REGISTRATIONS</button>
+<button onclick="loadRegistrations()">
+LOAD REGISTRATIONS
+</button>
 
-<div id="slotCount" class="slot">0 / 12 Teams</div>
+<div id="slotCount" class="slot">
+0 / 12 Teams
+</div>
 
 <div id="registrationList">
-<p class="muted">No tournament selected.</p>
-</div>
+<p class="muted">Select tournament.</p>
 </div>
 
+</div>
+
+
 <!-- ADMIN REGISTER -->
+
 <div class="card">
+
 <h2>Admin Register Team</h2>
 
 <label>Tournament ID</label>
@@ -110,13 +312,19 @@ button{width:100%;padding:11px;margin-top:10px;border:0;border-radius:8px;backgr
 <label>Team ID</label>
 <input id="adminTeamId" placeholder="TEAM_xxxxx">
 
-<button class="green" onclick="adminRegister()">REGISTER TEAM</button>
+<button class="green" onclick="adminRegister()">
+REGISTER TEAM
+</button>
 
-<div id="adminMsg"></div>
+<div id="adminRegMsg" class="msg"></div>
+
 </div>
 
+
 <!-- CREATE GROUP -->
+
 <div class="card">
+
 <h2>Create Match Group</h2>
 
 <label>Tournament ID</label>
@@ -134,13 +342,19 @@ button{width:100%;padding:11px;margin-top:10px;border:0;border-radius:8px;backgr
 <label>Match Time</label>
 <input id="gTime" placeholder="10 Aug, 8:00 PM">
 
-<button class="green" onclick="createGroup()">CREATE GROUP</button>
+<button class="green" onclick="createGroup()">
+CREATE GROUP
+</button>
 
-<div id="gMsg"></div>
+<div id="gMsg" class="msg"></div>
+
 </div>
 
-<!-- TEAM ASSIGNMENT -->
+
+<!-- ASSIGN TEAM -->
+
 <div class="card">
+
 <h2>Assign Team To Group</h2>
 
 <label>Group ID</label>
@@ -149,44 +363,90 @@ button{width:100%;padding:11px;margin-top:10px;border:0;border-radius:8px;backgr
 <label>Team ID</label>
 <input id="assignTeamId" placeholder="TEAM_xxxxx">
 
-<button class="yellow" onclick="assignTeam()">ASSIGN TEAM</button>
+<button onclick="assignTeam()">
+ASSIGN TEAM
+</button>
 
-<div id="assignMsg"></div>
+<div id="assignMsg" class="msg"></div>
 
-<div id="assignedTeams"></div>
 </div>
 
-<!-- ROOM -->
+
+<!-- UPDATE ROOM -->
+
 <div class="card">
+
 <h2>Update Room</h2>
 
 <label>Group ID</label>
 <input id="uGroupId" placeholder="GRP_xxxxx">
 
 <label>Room ID</label>
-<input id="uRoomId" placeholder="123456">
+<input id="uRoomId" placeholder="785083289">
 
 <label>Room Password</label>
-<input id="uRoomPass" placeholder="123456">
+<input id="uRoomPass" placeholder="09">
 
-<button onclick="updateRoom()">UPDATE ROOM</button>
+<button onclick="updateRoom()">
+UPDATE ROOM
+</button>
 
-<div id="uMsg"></div>
+<div id="uMsg" class="msg"></div>
+
 </div>
 
-<!-- GROUPS -->
-<div class="card">
-<h2>Groups</h2>
 
-<button class="gray" onclick="loadGroups()">REFRESH GROUPS</button>
+<!-- GROUPS -->
+
+<div class="card">
+
+<h2>All Groups</h2>
+
+<button class="gray" onclick="loadGroups()">
+REFRESH GROUPS
+</button>
 
 <div id="groupsList">
 <p class="muted">Loading...</p>
 </div>
+
 </div>
 
-<!-- RESULTS -->
+
+<!-- PROOFS -->
+
 <div class="card">
+
+<h2>Match Proofs</h2>
+
+<label>Group ID</label>
+<input id="proofGroupId" placeholder="GRP_xxxxx">
+
+<label>Payment Proof URL</label>
+<input id="paymentProof" placeholder="https://...">
+
+<label>Lobby Proof URL</label>
+<input id="lobbyProof" placeholder="https://...">
+
+<label>Bermuda Proof URL</label>
+<input id="bermudaProof" placeholder="https://...">
+
+<label>Purgatory Proof URL</label>
+<input id="purgatoryProof" placeholder="https://...">
+
+<button class="green" onclick="updateProofs()">
+UPDATE PROOFS
+</button>
+
+<div id="proofMsg" class="msg"></div>
+
+</div>
+
+
+<!-- RESULT -->
+
+<div class="card">
+
 <h2>Submit Result</h2>
 
 <label>Tournament ID</label>
@@ -204,66 +464,82 @@ button{width:100%;padding:11px;margin-top:10px;border:0;border-radius:8px;backgr
 <label>Kills</label>
 <input id="rKills" type="number" placeholder="5">
 
-<label>Points</label>
+<label>Total Points</label>
 <input id="rPoints" type="number" placeholder="12">
 
-<button class="green" onclick="submitResult()">SUBMIT RESULT</button>
+<button class="green" onclick="submitResult()">
+SUBMIT RESULT
+</button>
 
-<div id="rMsg"></div>
+<div id="rMsg" class="msg"></div>
+
 </div>
 
 </div>
+
 
 <script>
 
-const API_URL="https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_adN0jivaihhqwcORVtQsWstQcqE8dImABn6lyGJFBYCA/exec";
+const API_URL =
+"https://script.google.com/macros/s/AKfycbzMGaFyvPNfYyFT9s2gakYfmM16AkDL2lpe8H7MwVUNExvJrWUs8d39NL44-cI4dHT5Cg/exec";
 
-const ADMIN_EMAIL="vlogabhijeet030@gmail.com";
+const ADMIN_EMAIL =
+"vlogabhijeet030@gmail.com";
 
-const MAX_TEAMS=12;
+const MAX_TEAMS = 12;
 
-async function api(action,data={}){
+
+async function callAPI(action,data={}){
 
 try{
 
-const r=await fetch(API_URL,{
+const response = await fetch(API_URL,{
 method:"POST",
 headers:{
 "Content-Type":"text/plain;charset=utf-8"
 },
 body:JSON.stringify({
-action:action,
+action,
 adminEmail:ADMIN_EMAIL,
 ...data
 })
 });
 
-return await r.json();
+const text = await response.text();
+
+return JSON.parse(text);
 
 }catch(e){
 
-return{
+console.error(e);
+
+return {
 ok:false,
 message:"API connection failed"
 };
 
 }
-}
-
-function msg(id,text,error=false){
-
-const x=document.getElementById(id);
-
-if(!x)return;
-
-x.textContent=text;
-x.className=error?"msg error":"msg success";
 
 }
 
-function esc(x){
 
-return String(x??"")
+function showMsg(id,text,error=false){
+
+const el=document.getElementById(id);
+
+if(!el)return;
+
+el.textContent=text;
+
+el.className =
+"msg "+(error?"error":"success");
+
+}
+
+
+function esc(v){
+
+return String(v??"")
 .replace(/&/g,"&amp;")
 .replace(/</g,"&lt;")
 .replace(/>/g,"&gt;")
@@ -272,111 +548,117 @@ return String(x??"")
 
 }
 
+
 /* TOURNAMENT */
 
 async function createTournament(){
 
-const name=document.getElementById("tName").value.trim();
+const name=
+document.getElementById("tName").value.trim();
 
 if(!name){
 
-msg("tMsg","Tournament name required",true);
-return;
+showMsg(
+"tMsg",
+"Tournament name required",
+true
+);
 
+return;
 }
 
-const r=await api("createTournament",{
-
+const r=await callAPI(
+"createTournament",
+{
 name:name,
 type:document.getElementById("tType").value,
-entryFee:document.getElementById("tFee").value||"0",
-prize:document.getElementById("tPrize").value||"0",
-map:document.getElementById("tMap").value||"Bermuda",
-matchTime:document.getElementById("tTime").value||"",
-status:"upcoming"
+entryFee:document.getElementById("tFee").value,
+prize:document.getElementById("tPrize").value,
+map:document.getElementById("tMap").value,
+matchTime:document.getElementById("tTime").value,
+registrationOpen:true
+}
+);
 
-});
+showMsg(
+"tMsg",
+r.ok
+?"Created • ID: "+r.tournamentId
+:r.message,
+!r.ok
+);
 
 if(r.ok){
 
-msg("tMsg","Created • ID: "+r.tournamentId);
-
-document.getElementById("regTournamentId").value=r.tournamentId;
-document.getElementById("adminTournamentId").value=r.tournamentId;
-document.getElementById("gTournamentId").value=r.tournamentId;
-document.getElementById("rTournamentId").value=r.tournamentId;
+selectTournament(r.tournamentId);
 
 loadTournaments();
 
-}else{
-
-msg("tMsg",r.message||"Failed",true);
-
 }
 
 }
+
 
 async function loadTournaments(){
 
-const box=document.getElementById("tournamentList");
+const box=
+document.getElementById("tournamentList");
 
-box.innerHTML="<p class='muted'>Loading...</p>";
+box.innerHTML=
+"<p class='muted'>Loading...</p>";
 
-const r=await api("getTournaments");
+const r=
+await callAPI("getTournaments");
 
 if(!r.ok){
 
-box.innerHTML="<p class='muted'>Failed.</p>";
-return;
+box.innerHTML=
+"<p class='muted'>Failed.</p>";
 
+return;
 }
 
 const list=r.tournaments||[];
 
-if(!list.length){
+box.innerHTML=list.length
+?list.map(t=>{
 
-box.innerHTML="<p class='muted'>No tournaments.</p>";
-return;
+const open =
+t.registrationOpen===true ||
+String(t.registrationOpen)
+.toLowerCase()==="true";
 
-}
-
-box.innerHTML=list.map(t=>{
-
-const open=
-t.registrationOpen===true||
-String(t.registrationOpen).toLowerCase()==="true";
-
-return`
-
+return `
 <div class="item">
 
 <b>${esc(t.name)}</b>
 
-<p class="muted">
+<div class="muted">
 ID: ${esc(t.tournamentId)}
-</p>
-
-<p class="muted">
-Entry: ${esc(t.entryFee)} • Prize: ${esc(t.prize)}
-</p>
-
-<div class="${open?"open":"closed"}">
-${open?"REGISTRATION OPEN":"REGISTRATION CLOSED"}
 </div>
+
+<div class="muted">
+Entry: ₹${esc(t.entryFee)}
+ • Prize: ₹${esc(t.prize)}
+</div>
+
+<span class="badge ${open?"open":"closed"}">
+${open?"REGISTRATION OPEN":"REGISTRATION CLOSED"}
+</span>
 
 <div class="row">
 
-<button class="small green"
-onclick="setReg('${esc(t.tournamentId)}',true)">
+<button class="smallbtn green"
+onclick="setRegistration('${esc(t.tournamentId)}',true)">
 OPEN
 </button>
 
-<button class="small red"
-onclick="setReg('${esc(t.tournamentId)}',false)">
+<button class="smallbtn red"
+onclick="setRegistration('${esc(t.tournamentId)}',false)">
 CLOSE
 </button>
 
-<button class="small gray"
+<button class="smallbtn gray"
 onclick="selectTournament('${esc(t.tournamentId)}')">
 SELECT
 </button>
@@ -384,12 +666,13 @@ SELECT
 </div>
 
 </div>
-
 `;
 
-}).join("");
+}).join("")
+:"<p class='muted'>No tournaments.</p>";
 
 }
+
 
 function selectTournament(id){
 
@@ -402,9 +685,11 @@ loadRegistrations();
 
 }
 
-async function setReg(id,open){
 
-const r=await api("setRegistration",{
+async function setRegistration(id,open){
+
+const r=
+await callAPI("setRegistration",{
 tournamentId:id,
 registrationOpen:open
 });
@@ -420,32 +705,76 @@ loadRegistrations();
 
 }
 
-/* REGISTRATIONS */
+
+/* TEAM */
+
+async function createTeam(){
+
+const r=
+await callAPI("createTeam",{
+
+teamName:
+document.getElementById("teamName").value,
+
+leaderName:
+document.getElementById("leaderName").value,
+
+leaderPhone:
+document.getElementById("leaderPhone").value,
+
+members:
+document.getElementById("members").value,
+
+upiId:
+document.getElementById("upiId").value
+
+});
+
+showMsg(
+"teamMsg",
+r.ok
+?`${r.teamName} created • ${r.teamId}`
+:r.message,
+!r.ok
+);
+
+}
+
+
+/* REGISTRATION */
 
 async function loadRegistrations(){
 
-const id=document.getElementById("regTournamentId").value.trim();
+const tournamentId=
+document.getElementById(
+"regTournamentId"
+).value.trim();
 
-if(!id){
+if(!tournamentId){
 
 alert("Tournament ID required");
 return;
 
 }
 
-const box=document.getElementById("registrationList");
+const box=
+document.getElementById("registrationList");
 
-box.innerHTML="<p class='muted'>Loading...</p>";
+box.innerHTML=
+"<p class='muted'>Loading...</p>";
 
-const r=await api("getRegistrations",{
-tournamentId:id
-});
+const r=
+await callAPI(
+"getRegistrations",
+{tournamentId}
+);
 
 if(!r.ok){
 
-box.innerHTML="<p class='muted'>Failed.</p>";
-return;
+box.innerHTML=
+"<p class='muted'>Failed.</p>";
 
+return;
 }
 
 const list=r.registrations||[];
@@ -455,42 +784,52 @@ x.status==="pending"||
 x.status==="confirmed"
 );
 
-document.getElementById("slotCount").textContent=
+document.getElementById("slotCount")
+.textContent=
 active.length+" / "+MAX_TEAMS+" Teams";
 
 if(!list.length){
 
-box.innerHTML="<p class='muted'>No registrations.</p>";
-return;
+box.innerHTML=
+"<p class='muted'>No registrations.</p>";
 
+return;
 }
 
-box.innerHTML=list.map(x=>`
+box.innerHTML=list.map((x,i)=>`
 
 <div class="item">
 
-<b>TEAM: ${esc(x.teamId)}</b>
+<div class="team-name">
+Slot ${i+1} • ${esc(x.teamName || x.teamId)}
+</div>
 
-<p class="muted">
-REG ID: ${esc(x.registrationId)}
-</p>
+<div class="team-id">
+${esc(x.teamId)}
+</div>
 
-<p class="${esc(x.status)}">
-${String(x.status).toUpperCase()}
-</p>
+<div class="muted">
+Registration: ${esc(x.registrationId)}
+</div>
+
+<span class="badge ${
+x.status==="confirmed"
+?"open":"closed"
+}">
+${esc(String(x.status).toUpperCase())}
+</span>
 
 ${
 x.status==="pending"
-?
-`
+?`
 <div class="row">
 
-<button class="small green"
+<button class="smallbtn green"
 onclick="approve('${esc(x.registrationId)}')">
 APPROVE
 </button>
 
-<button class="small red"
+<button class="smallbtn red"
 onclick="reject('${esc(x.registrationId)}')">
 REJECT
 </button>
@@ -506,23 +845,29 @@ REJECT
 
 }
 
+
 async function approve(id){
 
-const r=await api("approveRegistration",{
-registrationId:id
-});
+const r=
+await callAPI(
+"approveRegistration",
+{registrationId:id}
+);
 
 alert(r.message||"Done");
 
 if(r.ok)loadRegistrations();
 
 }
+
 
 async function reject(id){
 
-const r=await api("rejectRegistration",{
-registrationId:id
-});
+const r=
+await callAPI(
+"rejectRegistration",
+{registrationId:id}
+);
 
 alert(r.message||"Done");
 
@@ -530,33 +875,39 @@ if(r.ok)loadRegistrations();
 
 }
 
-/* ADMIN REGISTER */
 
 async function adminRegister(){
 
 const tournamentId=
-document.getElementById("adminTournamentId").value.trim();
+document.getElementById(
+"adminTournamentId"
+).value.trim();
 
 const teamId=
-document.getElementById("adminTeamId").value.trim();
+document.getElementById(
+"adminTeamId"
+).value.trim();
 
-if(!tournamentId||!teamId){
-
-msg("adminMsg","Tournament ID and Team ID required",true);
-return;
-
+const r=
+await callAPI(
+"adminRegisterTeam",
+{
+tournamentId,
+teamId
 }
+);
 
-const r=await api("adminRegisterTeam",{
-tournamentId:tournamentId,
-teamId:teamId
-});
-
-msg("adminMsg",r.message||"Done",!r.ok);
+showMsg(
+"adminRegMsg",
+r.message||"Done",
+!r.ok
+);
 
 if(r.ok){
 
-document.getElementById("regTournamentId").value=tournamentId;
+document.getElementById(
+"regTournamentId"
+).value=tournamentId;
 
 loadRegistrations();
 
@@ -564,52 +915,57 @@ loadRegistrations();
 
 }
 
+
 /* GROUP */
 
 async function createGroup(){
 
-const tournamentId=
-document.getElementById("gTournamentId").value.trim();
+const r=
+await callAPI(
+"createGroup",
+{
+tournamentId:
+document.getElementById("gTournamentId").value,
 
-const groupName=
-document.getElementById("gName").value.trim();
-
-if(!tournamentId||!groupName){
-
-msg("gMsg","Tournament ID and Group Name required",true);
-return;
-
-}
-
-const r=await api("createGroup",{
-
-tournamentId:tournamentId,
-groupName:groupName,
+groupName:
+document.getElementById("gName").value,
 
 roomId:
-document.getElementById("gRoomId").value||"WAIT",
+document.getElementById("gRoomId").value,
 
 roomPassword:
-document.getElementById("gRoomPass").value||"WAIT",
-
-roomStatus:"waiting",
+document.getElementById("gRoomPass").value,
 
 matchTime:
-document.getElementById("gTime").value||""
+document.getElementById("gTime").value
+}
+);
 
-});
-
-msg(
+showMsg(
 "gMsg",
-r.ok?"Group created • ID: "+r.groupId:r.message||"Failed",
+r.ok
+?"Group created • "+r.groupId
+:r.message,
 !r.ok
 );
 
 if(r.ok){
 
-document.getElementById("assignGroupId").value=r.groupId;
-document.getElementById("uGroupId").value=r.groupId;
-document.getElementById("rGroupId").value=r.groupId;
+document.getElementById(
+"assignGroupId"
+).value=r.groupId;
+
+document.getElementById(
+"uGroupId"
+).value=r.groupId;
+
+document.getElementById(
+"proofGroupId"
+).value=r.groupId;
+
+document.getElementById(
+"rGroupId"
+).value=r.groupId;
 
 loadGroups();
 
@@ -617,80 +973,61 @@ loadGroups();
 
 }
 
-/* TEAM ASSIGN */
+
+/* ASSIGN */
 
 async function assignTeam(){
 
 const groupId=
-document.getElementById("assignGroupId").value.trim();
+document.getElementById(
+"assignGroupId"
+).value.trim();
 
 const teamId=
-document.getElementById("assignTeamId").value.trim();
+document.getElementById(
+"assignTeamId"
+).value.trim();
 
-if(!groupId||!teamId){
-
-msg("assignMsg","Group ID and Team ID required",true);
-return;
-
+const r=
+await callAPI(
+"assignTeamToGroup",
+{
+groupId,
+teamId
 }
+);
 
-/*
-NOTE:
-Ye function backend ke assignTeamToGroup action ko call karega.
-*/
-
-const r=await api("assignTeamToGroup",{
-
-groupId:groupId,
-teamId:teamId
-
-});
-
-msg(
+showMsg(
 "assignMsg",
 r.message||"Done",
 !r.ok
 );
 
-if(r.ok){
-
-document.getElementById("assignTeamId").value="";
-
-loadGroups();
+if(r.ok)loadGroups();
 
 }
 
-}
 
 /* ROOM */
 
 async function updateRoom(){
 
-const groupId=
-document.getElementById("uGroupId").value.trim();
-
-if(!groupId){
-
-msg("uMsg","Group ID required",true);
-return;
-
-}
-
-const r=await api("updateRoom",{
-
-groupId:groupId,
+const r=
+await callAPI(
+"updateRoom",
+{
+groupId:
+document.getElementById("uGroupId").value,
 
 roomId:
 document.getElementById("uRoomId").value,
 
 roomPassword:
-document.getElementById("uRoomPass").value,
+document.getElementById("uRoomPass").value
+}
+);
 
-roomStatus:"open"
-
-});
-
-msg(
+showMsg(
 "uMsg",
 r.message||"Done",
 !r.ok
@@ -700,70 +1037,97 @@ if(r.ok)loadGroups();
 
 }
 
+
 /* GROUP LIST */
 
 async function loadGroups(){
 
-const box=document.getElementById("groupsList");
+const box=
+document.getElementById("groupsList");
 
-box.innerHTML="<p class='muted'>Loading...</p>";
+box.innerHTML=
+"<p class='muted'>Loading...</p>";
 
-const r=await api("getGroups");
+const r=
+await callAPI("getGroups");
 
 if(!r.ok){
 
-box.innerHTML="<p class='muted'>Failed.</p>";
-return;
+box.innerHTML=
+"<p class='muted'>Failed.</p>";
 
+return;
 }
 
-const list=r.groups||[];
+const groups=r.groups||[];
 
-if(!list.length){
+if(!groups.length){
 
-box.innerHTML="<p class='muted'>No groups.</p>";
+box.innerHTML=
+"<p class='muted'>No groups.</p>";
+
 return;
-
 }
 
-box.innerHTML=list.map(g=>`
+box.innerHTML=groups.map(g=>`
 
 <div class="item">
 
 <b>${esc(g.groupName)}</b>
 
-<p class="muted">
-Group ID: ${esc(g.groupId)}
-</p>
+<div class="muted">
+${esc(g.groupId)}
+</div>
 
-<p>
-Room: ${esc(g.roomId||"WAIT")}
-</p>
+<hr>
 
-<p>
-Password: ${esc(g.roomPassword||"WAIT")}
-</p>
+<div>
+Room ID: <b>${esc(g.roomId||"WAIT")}</b>
+</div>
 
-<p class="muted">
-Time: ${esc(g.matchTime||"TBA")}
-</p>
+<div>
+Password: <b>${esc(g.roomPassword||"WAIT")}</b>
+</div>
 
-<div class="row">
+<div class="muted">
+Status: ${esc(g.roomStatus||"waiting")}
+</div>
 
-<button class="small yellow"
-onclick="selectGroup('${esc(g.groupId)}')">
-USE GROUP
-</button>
+<hr>
+
+<div class="team-name">
+Assigned Teams
+</div>
+
+${
+(g.teams||[]).length
+?
+g.teams.map((t,i)=>`
+<div class="info-row">
+Slot ${i+1} — ${esc(t.teamName)}
+<div class="team-id">
+${esc(t.teamId)}
+</div>
+</div>
+`).join("")
+:
+"<div class='muted'>No teams assigned.</div>"
+}
+
+<hr>
 
 <a
-class="small"
-style="display:block;background:#334155;color:white;text-decoration:none;border-radius:8px;padding:8px 12px"
+class="proof-link"
 href="match-room.html?id=${encodeURIComponent(g.groupId)}"
 target="_blank">
-ROOM
+OPEN MATCH ROOM →
 </a>
 
-</div>
+<button
+class="smallbtn gray"
+onclick="selectGroup('${esc(g.groupId)}')">
+SELECT GROUP
+</button>
 
 </div>
 
@@ -771,39 +1135,67 @@ ROOM
 
 }
 
+
 function selectGroup(id){
 
 document.getElementById("assignGroupId").value=id;
 document.getElementById("uGroupId").value=id;
+document.getElementById("proofGroupId").value=id;
 document.getElementById("rGroupId").value=id;
 
 }
+
+
+/* PROOFS */
+
+async function updateProofs(){
+
+const r=
+await callAPI(
+"updateProofs",
+{
+groupId:
+document.getElementById("proofGroupId").value,
+
+paymentProof:
+document.getElementById("paymentProof").value,
+
+lobbyProof:
+document.getElementById("lobbyProof").value,
+
+bermudaProof:
+document.getElementById("bermudaProof").value,
+
+purgatoryProof:
+document.getElementById("purgatoryProof").value
+}
+);
+
+showMsg(
+"proofMsg",
+r.message||"Done",
+!r.ok
+);
+
+}
+
 
 /* RESULT */
 
 async function submitResult(){
 
-const tournamentId=
-document.getElementById("rTournamentId").value.trim();
+const r=
+await callAPI(
+"submitResult",
+{
+tournamentId:
+document.getElementById("rTournamentId").value,
 
-const groupId=
-document.getElementById("rGroupId").value.trim();
+groupId:
+document.getElementById("rGroupId").value,
 
-const teamId=
-document.getElementById("rTeamId").value.trim();
-
-if(!tournamentId||!groupId||!teamId){
-
-msg("rMsg","Tournament ID, Group ID and Team ID required",true);
-return;
-
-}
-
-const r=await api("submitResult",{
-
-tournamentId:tournamentId,
-groupId:groupId,
-teamId:teamId,
+teamId:
+document.getElementById("rTeamId").value,
 
 position:
 document.getElementById("rPosition").value,
@@ -813,16 +1205,19 @@ document.getElementById("rKills").value,
 
 points:
 document.getElementById("rPoints").value
+}
+);
 
-});
-
-msg(
+showMsg(
 "rMsg",
 r.message||"Done",
 !r.ok
 );
 
 }
+
+
+/* START */
 
 loadTournaments();
 loadGroups();
