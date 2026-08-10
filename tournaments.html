@@ -1,128 +1,902 @@
-<!doctype html>
-<html lang="en">
+/* =========================================================
+   END ERA eSports - APP.JS
+   Tournament + Payment Registration
+   ========================================================= */
 
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tournaments - END ERA eSports</title>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_adN0jivaihhqwcORVtQsWstQcqE8dImABn6lyGJFBYCA/exec";
 
-<link rel="stylesheet" href="style.css">
-</head>
+const PAYMENT_QR = "payment-qr.jpg";
 
-<body>
-
-<header>
-
-<a class="logo" href="index.html">
-END ERA <small>eSports</small>
-</a>
-
-<nav>
-
-<a href="index.html">Home</a>
-
-<a class="active" href="tournaments.html">
-Tournaments
-</a>
-
-<a href="scrims.html">
-Scrims
-</a>
-
-<a href="team.html">
-My Team
-</a>
-
-<a href="results.html">
-Results
-</a>
-
-<a href="login.html">
-Login
-</a>
-
-</nav>
-
-<button
-type="button"
-onclick="menu()">
-☰
-</button>
-
-</header>
+let tournamentsData = [];
 
 
-<main>
+/* =========================
+   API
+========================= */
 
-<section class="page">
+async function callAPI(action, data = {}) {
 
-<p class="gold">
-COMPETE
-</p>
+  try {
 
-<h1>
-TOURNAMENTS
-</h1>
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: action,
+        ...data
+      })
+    });
 
+    const text = await response.text();
 
-<div class="tabs">
+    if (!text || text.trim().startsWith("<!")) {
+      throw new Error("Invalid API response");
+    }
 
-<button
-type="button"
-onclick="showT('all')">
-All
-</button>
+    return JSON.parse(text);
 
-<button
-type="button"
-onclick="showT('free')">
-Free
-</button>
+  } catch (error) {
 
-<button
-type="button"
-onclick="showT('paid')">
-Paid
-</button>
+    console.error("API ERROR:", error);
 
-</div>
+    return {
+      ok: false,
+      message: "Server connection failed"
+    };
 
-
-<div
-id="tournaments"
-class="grid">
-
-<p>
-Loading tournaments...
-</p>
-
-</div>
-
-</section>
-
-</main>
+  }
+}
 
 
-<footer>
-END ERA eSports
-</footer>
+/* =========================
+   HTML ESCAPE
+========================= */
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
 
 
-<script src="app.js"></script>
+/* =========================
+   MENU
+========================= */
+
+function menu() {
+
+  const nav = document.querySelector("header nav");
+
+  if (nav) {
+    nav.classList.toggle("show");
+  }
+
+}
 
 
-<script>
+/* =========================
+   LOAD TOURNAMENTS
+========================= */
+
+async function loadTournaments() {
+
+  const box = document.getElementById("tournaments");
+
+  if (!box) return;
+
+  box.innerHTML = `
+    <div class="loading-card">
+      Loading tournaments...
+    </div>
+  `;
+
+  const result = await callAPI("getTournaments");
+
+  if (!result.ok) {
+
+    box.innerHTML = `
+      <div class="card">
+        Unable to load tournaments.
+      </div>
+    `;
+
+    return;
+  }
+
+  tournamentsData = result.tournaments || [];
+
+  renderTournamentCards(tournamentsData);
+
+}
+
+
+/* =========================
+   RENDER TOURNAMENTS
+========================= */
+
+function renderTournamentCards(list) {
+
+  const box = document.getElementById("tournaments");
+
+  if (!box) return;
+
+  if (!list.length) {
+
+    box.innerHTML = `
+      <div class="card">
+        <h2>No tournaments available</h2>
+        <p class="muted">
+          Check again soon for upcoming matches.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML = list.map(t => {
+
+    const fee = Number(t.entryFee || 0);
+
+    const isFree = fee <= 0;
+
+    const open =
+      t.registrationOpen === true ||
+      String(t.registrationOpen).toLowerCase() === "true";
+
+    return `
+
+      <article class="card tournament-card">
+
+        <div class="tag">
+          ${isFree ? "FREE ENTRY" : "PAID SCRIM"}
+        </div>
+
+        <h2>
+          ${escapeHtml(t.name || "Tournament")}
+        </h2>
+
+        <div class="meta">
+
+          <div>
+            ENTRY
+            <b>
+              ${isFree ? "FREE" : "₹" + fee}
+            </b>
+          </div>
+
+          <div>
+            PRIZE
+            <b>
+              ₹${escapeHtml(t.prize || "0")}
+            </b>
+          </div>
+
+          <div>
+            MAP
+            <b>
+              ${escapeHtml(t.map || "Bermuda")}
+            </b>
+          </div>
+
+          <div>
+            TIME
+            <b>
+              ${escapeHtml(t.matchTime || "TBA")}
+            </b>
+          </div>
+
+        </div>
+
+        <div style="margin-top:15px">
+
+          ${
+            open
+
+            ?
+
+            `
+            <button
+              class="btn btn-primary full"
+              onclick="openRegistration('${escapeHtml(t.tournamentId)}')">
+
+              REGISTER NOW →
+
+            </button>
+            `
+
+            :
+
+            `
+            <button
+              class="btn full"
+              disabled
+              style="opacity:.5">
+
+              REGISTRATION CLOSED
+
+            </button>
+            `
+          }
+
+        </div>
+
+      </article>
+
+    `;
+
+  }).join("");
+
+}
+
+
+/* =========================
+   FILTER
+========================= */
+
+function showT(type) {
+
+  if (!tournamentsData.length) {
+
+    loadTournaments();
+
+    return;
+  }
+
+  let filtered = tournamentsData;
+
+  if (type === "free") {
+
+    filtered = tournamentsData.filter(t =>
+      Number(t.entryFee || 0) <= 0
+    );
+
+  }
+
+  if (type === "paid") {
+
+    filtered = tournamentsData.filter(t =>
+      Number(t.entryFee || 0) > 0
+    );
+
+  }
+
+  renderTournamentCards(filtered);
+
+}
+
+
+/* =========================
+   REGISTRATION MODAL
+========================= */
+
+function openRegistration(tournamentId) {
+
+  const tournament =
+    tournamentsData.find(
+      t => String(t.tournamentId) === String(tournamentId)
+    );
+
+  if (!tournament) {
+
+    alert("Tournament not found.");
+
+    return;
+  }
+
+  const fee = Number(tournament.entryFee || 0);
+
+  const old = document.getElementById("paymentModal");
+
+  if (old) old.remove();
+
+  const modal = document.createElement("div");
+
+  modal.id = "paymentModal";
+
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    z-index:9999;
+    overflow:auto;
+    padding:20px;
+  `;
+
+  modal.innerHTML = `
+
+    <div style="
+      max-width:480px;
+      margin:30px auto;
+      background:#101010;
+      border:1px solid #292929;
+      border-radius:18px;
+      padding:22px;
+    ">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:18px;
+      ">
+
+        <div>
+
+          <div style="
+            color:#d9ab43;
+            font-size:11px;
+            letter-spacing:2px;
+            font-weight:bold;
+          ">
+            REGISTRATION
+          </div>
+
+          <h2 style="margin-top:6px">
+            ${escapeHtml(tournament.name)}
+          </h2>
+
+        </div>
+
+        <button
+          onclick="closeRegistration()"
+          style="
+            background:#222;
+            border:0;
+            color:white;
+            width:38px;
+            height:38px;
+            border-radius:50%;
+            font-size:20px;
+          ">
+          ×
+        </button>
+
+      </div>
+
+
+      <div style="
+        background:#080808;
+        border:1px solid #292929;
+        border-radius:12px;
+        padding:16px;
+        text-align:center;
+        margin-bottom:18px;
+      ">
+
+        <div style="
+          color:#888;
+          font-size:12px;
+        ">
+          ENTRY FEE
+        </div>
+
+        <div style="
+          color:#d9ab43;
+          font-size:30px;
+          font-weight:900;
+          margin:5px 0 15px;
+        ">
+          ${fee > 0 ? "₹" + fee : "FREE"}
+        </div>
+
+        ${
+          fee > 0
+
+          ?
+
+          `
+          <div style="
+            background:white;
+            border-radius:12px;
+            padding:10px;
+            display:inline-block;
+          ">
+
+            <img
+              src="${PAYMENT_QR}"
+              alt="Payment QR"
+              style="
+                width:230px;
+                max-width:100%;
+                display:block;
+              "
+              onerror="
+                this.parentElement.innerHTML=
+                '<div style=&quot;color:#222;padding:50px 20px&quot;>Payment QR not found</div>';
+              "
+            >
+
+          </div>
+
+          <p style="
+            color:#aaa;
+            font-size:12px;
+            margin-top:12px;
+            line-height:1.5;
+          ">
+            Scan the QR and pay ₹${fee}.
+            After payment, enter your UTR / Transaction ID below.
+          </p>
+          `
+
+          :
+
+          `
+          <p style="color:#4ade80">
+            No payment required.
+          </p>
+          `
+        }
+
+      </div>
+
+
+      <label>
+        Team ID
+      </label>
+
+      <input
+        id="paymentTeamId"
+        placeholder="TEAM_xxxxx"
+      >
+
+
+      ${
+        fee > 0
+
+        ?
+
+        `
+
+        <label>
+          UTR / Transaction ID
+        </label>
+
+        <input
+          id="paymentUTR"
+          placeholder="Enter UTR / Transaction ID"
+        >
+
+
+        <label>
+          Payment Screenshot
+        </label>
+
+        <input
+          id="paymentScreenshot"
+          type="file"
+          accept="image/*"
+        >
+
+        <div id="paymentPreview"
+          style="margin-top:10px">
+        </div>
+
+        `
+
+        :
+
+        ""
+      }
+
+
+      <button
+        class="btn btn-primary full"
+        onclick="submitTournamentRegistration(
+          '${escapeHtml(tournament.tournamentId)}',
+          ${fee}
+        )">
+
+        ${fee > 0
+          ? "PAYMENT DONE • REGISTER"
+          : "REGISTER NOW"}
+
+      </button>
+
+
+      <button
+        onclick="closeRegistration()"
+        style="
+          width:100%;
+          margin-top:10px;
+          padding:12px;
+          background:#222;
+          color:#aaa;
+          border:1px solid #333;
+          border-radius:8px;
+        ">
+
+        CANCEL
+
+      </button>
+
+
+      <div
+        id="paymentMessage"
+        style="
+          margin-top:12px;
+          font-size:13px;
+          text-align:center;
+        ">
+      </div>
+
+    </div>
+
+  `;
+
+  document.body.appendChild(modal);
+
+
+  const screenshot =
+    document.getElementById("paymentScreenshot");
+
+  if (screenshot) {
+
+    screenshot.addEventListener(
+      "change",
+      previewPaymentImage
+    );
+
+  }
+
+}
+
+
+/* =========================
+   CLOSE MODAL
+========================= */
+
+function closeRegistration() {
+
+  const modal =
+    document.getElementById("paymentModal");
+
+  if (modal) {
+    modal.remove();
+  }
+
+}
+
+
+/* =========================
+   PAYMENT IMAGE PREVIEW
+========================= */
+
+function previewPaymentImage(event) {
+
+  const file = event.target.files[0];
+
+  const preview =
+    document.getElementById("paymentPreview");
+
+  if (!file || !preview) return;
+
+  if (!file.type.startsWith("image/")) {
+
+    preview.innerHTML =
+      `<span style="color:#f87171">
+        Please select an image.
+      </span>`;
+
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    preview.innerHTML = `
+
+      <img
+        src="${e.target.result}"
+        style="
+          width:100%;
+          max-height:220px;
+          object-fit:contain;
+          border-radius:10px;
+          border:1px solid #292929;
+        "
+      >
+
+    `;
+
+  };
+
+  reader.readAsDataURL(file);
+
+}
+
+
+/* =========================
+   SUBMIT REGISTRATION
+========================= */
+
+async function submitTournamentRegistration(
+  tournamentId,
+  fee
+) {
+
+  const teamId =
+    document.getElementById("paymentTeamId")
+      ?.value.trim();
+
+  const message =
+    document.getElementById("paymentMessage");
+
+  if (!teamId) {
+
+    message.innerHTML =
+      `<span style="color:#f87171">
+        Team ID required.
+      </span>`;
+
+    return;
+  }
+
+
+  let utr = "";
+  let screenshotBase64 = "";
+
+
+  if (fee > 0) {
+
+    utr =
+      document.getElementById("paymentUTR")
+        ?.value.trim();
+
+    const file =
+      document.getElementById("paymentScreenshot")
+        ?.files[0];
+
+
+    if (!utr) {
+
+      message.innerHTML =
+        `<span style="color:#f87171">
+          UTR / Transaction ID required.
+        </span>`;
+
+      return;
+    }
+
+
+    if (!file) {
+
+      message.innerHTML =
+        `<span style="color:#f87171">
+          Payment screenshot required.
+        </span>`;
+
+      return;
+    }
+
+
+    message.innerHTML =
+      `<span style="color:#d9ab43">
+        Preparing payment proof...
+      </span>`;
+
+
+    screenshotBase64 =
+      await fileToBase64(file);
+
+  }
+
+
+  message.innerHTML =
+    `<span style="color:#d9ab43">
+      Submitting registration...
+    </span>`;
+
+
+  /*
+    IMPORTANT:
+    Code.gs must support:
+    registerTeamWithPayment
+  */
+
+  const result =
+    await callAPI(
+      "registerTeamWithPayment",
+      {
+        tournamentId: tournamentId,
+        teamId: teamId,
+        utr: utr,
+        paymentScreenshot: screenshotBase64
+      }
+    );
+
+
+  if (!result.ok) {
+
+    message.innerHTML =
+      `<span style="color:#f87171">
+        ${escapeHtml(
+          result.message || "Registration failed"
+        )}
+      </span>`;
+
+    return;
+  }
+
+
+  message.innerHTML =
+    `<span style="color:#4ade80">
+      Registration submitted successfully.
+    </span>`;
+
+
+  setTimeout(() => {
+
+    closeRegistration();
+
+    alert(
+      result.message ||
+      "Registration submitted. Waiting for admin approval."
+    );
+
+  }, 1000);
+
+}
+
+
+/* =========================
+   FILE TO BASE64
+========================= */
+
+function fileToBase64(file) {
+
+  return new Promise((resolve,reject) => {
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+      const result = String(reader.result || "");
+
+      /*
+        Remove:
+        data:image/jpeg;base64,
+        */
+
+      const comma =
+        result.indexOf(",");
+
+      resolve(
+        comma >= 0
+          ? result.substring(comma + 1)
+          : result
+      );
+
+    };
+
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+
+/* =========================
+   HOME PAGE MATCHES
+========================= */
+
+async function renderMatches() {
+
+  const box =
+    document.getElementById("matches");
+
+  if (!box) return;
+
+  const result =
+    await callAPI("getTournaments");
+
+  if (!result.ok) {
+
+    box.innerHTML = `
+      <div class="card">
+        Unable to load matches.
+      </div>
+    `;
+
+    return;
+  }
+
+  const list =
+    (result.tournaments || []).slice(0,6);
+
+  if (!list.length) {
+
+    box.innerHTML = `
+      <div class="card">
+        <h2>No upcoming matches</h2>
+        <p class="muted">
+          New competitions will appear here.
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  box.innerHTML = list.map(t => {
+
+    const fee =
+      Number(t.entryFee || 0);
+
+    return `
+
+      <div class="card">
+
+        <span class="tag">
+          ${fee > 0 ? "PAID" : "FREE"}
+        </span>
+
+        <h2>
+          ${escapeHtml(t.name || "Tournament")}
+        </h2>
+
+        <div class="meta">
+
+          <div>
+            ENTRY
+            <b>
+              ${fee > 0 ? "₹"+fee : "FREE"}
+            </b>
+          </div>
+
+          <div>
+            PRIZE
+            <b>
+              ₹${escapeHtml(t.prize || "0")}
+            </b>
+          </div>
+
+        </div>
+
+        <a
+          class="btn full"
+          href="tournaments.html">
+
+          VIEW TOURNAMENT →
+
+        </a>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+
+
+/* =========================
+   AUTO LOAD
+========================= */
 
 document.addEventListener(
-"DOMContentLoaded",
-function(){
+  "DOMContentLoaded",
+  function() {
 
-showT("all");
+    if (
+      document.getElementById("tournaments")
+    ) {
 
-});
+      loadTournaments();
 
-</script>
+    }
 
-
-</body>
-</html>
+  }
+);
