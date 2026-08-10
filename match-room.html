@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Match Room - END ERA eSports</title>
 
 <style>
-
 *{
   margin:0;
   padding:0;
@@ -24,7 +22,7 @@ body{
 
 .container{
   max-width:480px;
-  margin:0 auto;
+  margin:auto;
 }
 
 .header{
@@ -68,14 +66,9 @@ body{
   border-radius:12px;
   padding:14px;
   margin-bottom:12px;
-
   display:flex;
   justify-content:space-between;
   align-items:center;
-}
-
-.lobby-box:last-child{
-  margin-bottom:0;
 }
 
 .lobby-label{
@@ -89,7 +82,6 @@ body{
   font-weight:700;
   color:#38bdf8;
   letter-spacing:1px;
-  word-break:break-all;
 }
 
 .copy-btn{
@@ -101,11 +93,6 @@ body{
   font-size:13px;
   cursor:pointer;
   font-weight:600;
-  flex-shrink:0;
-}
-
-.copy-btn:active{
-  background:#334155;
 }
 
 .status{
@@ -117,20 +104,15 @@ body{
   border-radius:20px;
   font-weight:600;
   margin-bottom:16px;
-  text-transform:uppercase;
 }
 
 .info-row{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-
-  padding:11px 0;
-
+  gap:15px;
+  padding:10px 0;
   border-bottom:1px solid #1e293b;
   font-size:14px;
-
-  gap:12px;
 }
 
 .info-row:last-child{
@@ -139,28 +121,22 @@ body{
 
 .info-label{
   color:#94a3b8;
-  flex-shrink:0;
 }
 
 .info-value{
   color:#f1f5f9;
   font-weight:600;
   text-align:right;
-  word-break:break-word;
 }
 
 .team-name{
-  color:#f1f5f9;
-  font-weight:600;
-  text-align:right;
+  color:#38bdf8;
+  font-weight:700;
 }
 
-.team-id{
-  display:block;
-  color:#64748b;
-  font-size:10px;
-  margin-top:3px;
-  font-weight:400;
+.slot-number{
+  color:#fbbf24;
+  font-weight:700;
 }
 
 table{
@@ -206,75 +182,6 @@ tr:last-child td{
   margin:20px 0;
 }
 
-/* PROOFS */
-
-.proof-tabs{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding-bottom:4px;
-  scrollbar-width:none;
-}
-
-.proof-tabs::-webkit-scrollbar{
-  display:none;
-}
-
-.proof-tab{
-  flex-shrink:0;
-  background:#0f172a;
-  color:#94a3b8;
-  border:1px solid #1e293b;
-  padding:10px 14px;
-  border-radius:10px;
-  font-size:12px;
-  font-weight:600;
-  cursor:pointer;
-}
-
-.proof-tab.active{
-  background:#2563eb;
-  color:#fff;
-  border-color:#2563eb;
-}
-
-.proof-content{
-  margin-top:14px;
-  background:#0f172a;
-  border:1px solid #1e293b;
-  border-radius:12px;
-  min-height:120px;
-  overflow:hidden;
-}
-
-.proof-empty{
-  padding:35px 15px;
-  text-align:center;
-  color:#64748b;
-  font-size:13px;
-}
-
-.proof-image{
-  width:100%;
-  display:block;
-  max-height:500px;
-  object-fit:contain;
-  background:#000;
-}
-
-.proof-link{
-  display:block;
-  text-align:center;
-  background:#2563eb;
-  color:#fff;
-  text-decoration:none;
-  margin:14px;
-  padding:11px;
-  border-radius:9px;
-  font-weight:600;
-  font-size:13px;
-}
-
 .whatsapp-btn{
   display:block;
   background:#16a34a;
@@ -287,11 +194,25 @@ tr:last-child td{
   margin-top:8px;
 }
 
-.muted{
-  color:#64748b;
-  font-size:13px;
+.proof-box{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  border-radius:12px;
+  padding:14px;
+  margin-top:10px;
 }
 
+.proof-title{
+  color:#38bdf8;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.proof-text{
+  color:#94a3b8;
+  font-size:13px;
+  line-height:1.5;
+}
 </style>
 </head>
 
@@ -305,66 +226,41 @@ tr:last-child td{
   </div>
 
   <div id="content">
-    <div class="loading">
-      Loading match data...
-    </div>
+    <div class="loading">Loading match data...</div>
   </div>
 
 </div>
 
 <script>
 
-/* ==============================
-   API
-============================== */
-
 const API_URL =
-"https://script.google.com/macros/s/AKfycbzMGaFyvPNfYyFT9s2gakYfmM16AkDL2lpe8H7MwVUNExvJrWUs8d39NL44-cI4dHT5Cg/exec";
+"https://script.google.com/macros/s/AKfycbxjDkPM1foNGh76ieWGK-rq1_adN0jivaihhqwcORVtQsWstQcqE8dImABn6lyGJFBYCA/exec";
 
-
-const urlParams =
-new URLSearchParams(window.location.search);
-
-const groupId =
-urlParams.get("id");
-
-
-/* ==============================
-   API CALL
-============================== */
+const urlParams = new URLSearchParams(window.location.search);
+const groupId = urlParams.get("id");
 
 async function callAPI(action,data={}){
 
   const res = await fetch(API_URL,{
     method:"POST",
-
     headers:{
       "Content-Type":"text/plain;charset=utf-8"
     },
-
     body:JSON.stringify({
       action,
       ...data
     }),
-
     redirect:"follow"
   });
 
   const text = await res.text();
 
-  if(
-    text.trim().startsWith("<!")
-  ){
+  if(!text || text.trim().startsWith("<!")){
     throw new Error("API error");
   }
 
   return JSON.parse(text);
 }
-
-
-/* ==============================
-   HTML ESCAPE
-============================== */
 
 function escapeHtml(value){
 
@@ -374,293 +270,114 @@ function escapeHtml(value){
     .replace(/>/g,"&gt;")
     .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
-
 }
-
-
-/* ==============================
-   COPY
-============================== */
 
 function copyText(text){
 
   if(!text){
+    alert("Nothing to copy");
     return;
   }
 
-  navigator.clipboard.writeText(text)
-  .then(()=>{
-    alert("Copied: " + text);
-  })
-  .catch(()=>{
-    alert("Copy failed");
-  });
-
+  navigator.clipboard.writeText(String(text))
+    .then(()=>{
+      alert("Copied: " + text);
+    })
+    .catch(()=>{
+      alert("Copy failed");
+    });
 }
 
 
-/* ==============================
-   TEAM NAME
-============================== */
+/*
+  IMPORTANT:
+  Get actual team name from Teams sheet using teamId.
+*/
 
-async function getTeamName(registration){
+async function getTeamName(teamId){
 
-  /*
-    First try fields already returned
-    by getRegistrations.
-  */
-
-  if(registration.teamName){
-    return registration.teamName;
+  if(!teamId){
+    return "Unknown Team";
   }
-
-  if(registration.name){
-    return registration.name;
-  }
-
-  if(registration.team){
-    if(typeof registration.team === "string"){
-      return registration.team;
-    }
-
-    if(registration.team.name){
-      return registration.team.name;
-    }
-
-    if(registration.team.teamName){
-      return registration.team.teamName;
-    }
-  }
-
-
-  /*
-    If team name isn't included,
-    try getTeam API.
-  */
 
   try{
 
-    const teamRes =
-      await callAPI("getTeam",{
-        teamId:registration.teamId
-      });
+    const r = await callAPI("getTeam",{
+      teamId:teamId
+    });
 
-    if(teamRes && teamRes.ok){
+    if(r.ok && r.team){
 
-      const team =
-        teamRes.team || {};
-
-      return (
-        team.teamName ||
-        team.name ||
-        team.team_name ||
-        registration.teamId
-      );
+      return r.team.teamName || teamId;
 
     }
 
-  }catch(error){
+  }catch(e){
 
-    console.log(
-      "Team name lookup failed:",
-      registration.teamId
-    );
+    console.log("Team lookup failed:",teamId);
 
   }
 
+  return teamId;
+}
 
-  /*
-    Final fallback
-  */
 
-  return registration.teamId || "Unknown Team";
+/*
+  Convert registrations into:
+  {
+    teamId,
+    teamName,
+    ...
+  }
+*/
+
+async function addTeamNames(registrations){
+
+  return await Promise.all(
+
+    registrations.map(async r=>{
+
+      const teamName = await getTeamName(r.teamId);
+
+      return {
+        ...r,
+        teamName:teamName
+      };
+
+    })
+
+  );
 
 }
 
 
-/* ==============================
-   LOAD TEAM NAMES
-============================== */
+/*
+  Add team names to points table too.
+*/
 
-async function prepareTeams(registrations){
+async function addPointsTeamNames(pointsTable){
 
-  const teams =
-    await Promise.all(
+  return await Promise.all(
 
-      registrations.map(
-        async (r)=>{
+    pointsTable.map(async t=>{
 
-          const teamName =
-            await getTeamName(r);
+      const teamName = await getTeamName(t.teamId);
 
-          return{
-            ...r,
-            displayTeamName:teamName
-          };
+      return {
+        ...t,
+        teamName:teamName
+      };
 
-        }
-      )
+    })
 
-    );
-
-  return teams;
+  );
 
 }
 
-
-/* ==============================
-   PROOF SYSTEM
-============================== */
-
-let proofData = {
-  payment:"",
-  lobby:"",
-  bermuda:"",
-  purgatory:""
-};
-
-
-function normalizeProof(value){
-
-  if(!value){
-    return "";
-  }
-
-  return String(value).trim();
-
-}
-
-
-function renderProof(type){
-
-  const box =
-    document.getElementById("proofContent");
-
-  if(!box){
-    return;
-  }
-
-  const url =
-    normalizeProof(proofData[type]);
-
-
-  if(!url){
-
-    box.innerHTML = `
-      <div class="proof-empty">
-        No ${escapeHtml(type)} proof uploaded yet.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  /*
-    Image proof
-  */
-
-  const isImage =
-    /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(url);
-
-
-  if(isImage){
-
-    box.innerHTML = `
-
-      <img
-        class="proof-image"
-        src="${escapeHtml(url)}"
-        alt="${escapeHtml(type)} proof"
-        onerror="this.style.display='none';document.getElementById('proofError').style.display='block'"
-      >
-
-      <div
-        id="proofError"
-        class="proof-empty"
-        style="display:none"
-      >
-        Unable to load image.
-      </div>
-
-      <a
-        class="proof-link"
-        href="${escapeHtml(url)}"
-        target="_blank"
-        rel="noopener"
-      >
-        OPEN PROOF
-      </a>
-
-    `;
-
-    return;
-
-  }
-
-
-  /*
-    PDF / Drive / Other proof link
-  */
-
-  box.innerHTML = `
-
-    <div class="proof-empty">
-      Proof is available through the link below.
-    </div>
-
-    <a
-      class="proof-link"
-      href="${escapeHtml(url)}"
-      target="_blank"
-      rel="noopener"
-    >
-      OPEN ${escapeHtml(type.toUpperCase())} PROOF
-    </a>
-
-  `;
-
-}
-
-
-function setupProofTabs(){
-
-  document.querySelectorAll(".proof-tab")
-    .forEach(tab=>{
-
-      tab.addEventListener(
-        "click",
-        ()=>{
-
-          document
-            .querySelectorAll(".proof-tab")
-            .forEach(x=>
-              x.classList.remove("active")
-            );
-
-          tab.classList.add("active");
-
-          renderProof(
-            tab.dataset.type
-          );
-
-        }
-      );
-
-    });
-
-}
-
-
-/* ==============================
-   LOAD MATCH ROOM
-============================== */
 
 async function loadMatchRoom(){
 
-  const content =
-    document.getElementById("content");
-
+  const content = document.getElementById("content");
 
   if(!groupId){
 
@@ -672,161 +389,125 @@ async function loadMatchRoom(){
     `;
 
     return;
-
   }
-
 
   try{
 
-    /* ==========================
-       GROUP
-    ========================== */
+    /*
+      GET GROUP
+    */
 
-    const groupRes =
-      await callAPI(
-        "getGroup",
-        {groupId}
-      );
-
+    const groupRes = await callAPI("getGroup",{
+      groupId:groupId
+    });
 
     if(!groupRes.ok){
 
       content.innerHTML = `
         <div class="error">
-          ${escapeHtml(
-            groupRes.message ||
-            "Group not found"
-          )}
+          ${escapeHtml(groupRes.message || "Group not found")}
         </div>
       `;
 
       return;
-
     }
 
-
-    const group =
-      groupRes.group || {};
+    const group = groupRes.group;
 
 
-    /* ==========================
-       POINTS
-    ========================== */
+    /*
+      GET POINTS
+    */
 
-    const pointsRes =
-      await callAPI(
-        "getPointsTable",
-        {groupId}
-      );
+    const pointsRes = await callAPI(
+      "getPointsTable",
+      {
+        groupId:groupId
+      }
+    );
 
-    const pointsTable =
+    let pointsTable =
       pointsRes.ok
-      ? pointsRes.pointsTable || []
+      ? (pointsRes.pointsTable || [])
       : [];
 
 
-    /* ==========================
-       REGISTRATIONS
-    ========================== */
+    /*
+      GET REGISTRATIONS
+    */
 
-    const regRes =
-      await callAPI(
-        "getRegistrations",
-        {
-          tournamentId:
-            group.tournamentId
-        }
-      );
-
+    const regRes = await callAPI(
+      "getRegistrations",
+      {
+        tournamentId:group.tournamentId
+      }
+    );
 
     let registrations =
       regRes.ok
-      ? regRes.registrations || []
+      ? (regRes.registrations || [])
       : [];
 
 
     /*
-      Only confirmed registrations
-      should normally appear in match room.
+      Only confirmed/pending registrations.
+      Rejected teams won't show.
     */
 
-    registrations =
-      registrations.filter(r=>
-        String(r.status || "")
-          .toLowerCase() === "confirmed"
-        ||
-        String(r.status || "")
-          .toLowerCase() === "approved"
-        ||
-        !r.status
-      );
+    registrations = registrations.filter(r=>
+      String(r.status).toLowerCase()==="confirmed" ||
+      String(r.status).toLowerCase()==="pending"
+    );
 
 
     /*
-      Team names
+      GET TEAM NAMES
     */
 
     registrations =
-      await prepareTeams(
-        registrations
-      );
+      await addTeamNames(registrations);
+
+    pointsTable =
+      await addPointsTeamNames(pointsTable);
 
 
-    /* ==========================
-       PROOFS
-    ========================== */
+    /*
+      Sort registrations by registration time.
+    */
 
-    proofData = {
+    registrations.sort((a,b)=>{
 
-      payment:
-        group.paymentProof ||
-        group.paymentProofUrl ||
-        group.payment_proof ||
-        "",
+      const aTime =
+        new Date(a.registeredAt || 0).getTime();
 
-      lobby:
-        group.lobbyProof ||
-        group.lobbyProofUrl ||
-        group.lobby_proof ||
-        "",
+      const bTime =
+        new Date(b.registeredAt || 0).getTime();
 
-      bermuda:
-        group.bermudaProof ||
-        group.bermudaProofUrl ||
-        group.bermuda_proof ||
-        "",
+      return aTime-bTime;
 
-      purgatory:
-        group.purgatoryProof ||
-        group.purgatoryProofUrl ||
-        group.purgatory_proof ||
-        ""
-
-    };
+    });
 
 
-    /* ==========================
-       MAIN HTML
-    ========================== */
+    /*
+      MAIN CONTENT
+    */
 
     let html = `
 
       <div class="status">
         ${escapeHtml(
-          group.roomStatus ||
-          "WAITING"
+          String(group.roomStatus || "WAITING").toUpperCase()
         )}
       </div>
 
 
-      <!-- LOBBY -->
+      <!-- ROOM -->
 
       <div class="card">
 
         <div class="card-title">
           Lobby Credentials
         </div>
-
 
         <div class="lobby-box">
 
@@ -837,21 +518,14 @@ async function loadMatchRoom(){
             </div>
 
             <div class="lobby-value">
-              ${escapeHtml(
-                group.roomId ||
-                "WAIT"
-              )}
+              ${escapeHtml(group.roomId || "WAIT")}
             </div>
 
           </div>
 
-
           <button
             class="copy-btn"
-            onclick="copyText('${escapeHtml(
-              group.roomId || ""
-            )}')"
-          >
+            onclick="copyText('${escapeHtml(group.roomId || "")}')">
             COPY
           </button>
 
@@ -867,21 +541,14 @@ async function loadMatchRoom(){
             </div>
 
             <div class="lobby-value">
-              ${escapeHtml(
-                group.roomPassword ||
-                "WAIT"
-              )}
+              ${escapeHtml(group.roomPassword || "WAIT")}
             </div>
 
           </div>
 
-
           <button
             class="copy-btn"
-            onclick="copyText('${escapeHtml(
-              group.roomPassword || ""
-            )}')"
-          >
+            onclick="copyText('${escapeHtml(group.roomPassword || "")}')">
             COPY
           </button>
 
@@ -898,7 +565,6 @@ async function loadMatchRoom(){
           Match Info
         </div>
 
-
         <div class="info-row">
 
           <span class="info-label">
@@ -906,9 +572,7 @@ async function loadMatchRoom(){
           </span>
 
           <span class="info-value">
-            ${escapeHtml(
-              group.groupName || "-"
-            )}
+            ${escapeHtml(group.groupName || "-")}
           </span>
 
         </div>
@@ -921,9 +585,7 @@ async function loadMatchRoom(){
           </span>
 
           <span class="info-value">
-            ${escapeHtml(
-              group.matchTime || "--"
-            )}
+            ${escapeHtml(group.matchTime || "--")}
           </span>
 
         </div>
@@ -933,9 +595,9 @@ async function loadMatchRoom(){
     `;
 
 
-    /* ==========================
-       POINTS TABLE
-    ========================== */
+    /*
+      POINTS TABLE
+    */
 
     html += `
 
@@ -951,13 +613,11 @@ async function loadMatchRoom(){
           ?
 
           `
-          <div
-            style="
-              color:#64748b;
-              font-size:14px;
-              padding:10px 0;
-            "
-          >
+          <div style="
+            color:#64748b;
+            font-size:14px;
+            padding:10px 0;
+          ">
             Waiting for results...
           </div>
           `
@@ -970,24 +630,18 @@ async function loadMatchRoom(){
             <thead>
 
               <tr>
-
                 <th>#</th>
-
                 <th>Team</th>
-
                 <th>Pts</th>
-
                 <th>Kills</th>
-
               </tr>
 
             </thead>
 
-
             <tbody>
 
-              ${pointsTable.map(
-                (t,i)=>`
+              ${
+                pointsTable.map((t,i)=>`
 
                   <tr>
 
@@ -995,39 +649,24 @@ async function loadMatchRoom(){
                       ${i+1}
                     </td>
 
-                    <td>
-                      ${
-                        escapeHtml(
-                          t.teamName ||
-                          t.name ||
-                          t.teamId ||
-                          "Team"
-                        )
-                      }
-
-                      <span class="team-id">
-                        ${escapeHtml(
-                          t.teamId || ""
-                        )}
-                      </span>
-                    </td>
-
-                    <td>
+                    <td class="team-name">
                       ${escapeHtml(
-                        t.totalPoints || 0
+                        t.teamName || t.teamId
                       )}
                     </td>
 
                     <td>
-                      ${escapeHtml(
-                        t.totalKills || 0
-                      )}
+                      ${escapeHtml(t.totalPoints || 0)}
+                    </td>
+
+                    <td>
+                      ${escapeHtml(t.totalKills || 0)}
                     </td>
 
                   </tr>
 
-                `
-              ).join("")}
+                `).join("")
+              }
 
             </tbody>
 
@@ -1040,9 +679,9 @@ async function loadMatchRoom(){
     `;
 
 
-    /* ==========================
-       PARTICIPATING TEAMS
-    ========================== */
+    /*
+      PARTICIPATING TEAMS
+    */
 
     html += `
 
@@ -1052,51 +691,43 @@ async function loadMatchRoom(){
           Participating Teams
         </div>
 
-
         ${
           registrations.length === 0
 
           ?
 
           `
-          <div class="muted">
+          <div style="
+            color:#64748b;
+            font-size:14px;
+          ">
             No teams yet.
           </div>
           `
 
           :
 
-          registrations.map(
-            (r,i)=>`
+          registrations.map((r,i)=>`
 
-              <div class="info-row">
+            <div class="info-row">
 
-                <span class="info-label">
+              <span class="info-label">
+
+                <span class="slot-number">
                   Slot ${i+1}
                 </span>
 
+              </span>
 
-                <span class="team-name">
+              <span class="info-value team-name">
+                ${escapeHtml(
+                  r.teamName || r.teamId
+                )}
+              </span>
 
-                  ${escapeHtml(
-                    r.displayTeamName ||
-                    r.teamName ||
-                    r.teamId ||
-                    "Unknown Team"
-                  )}
+            </div>
 
-                  <span class="team-id">
-                    ${escapeHtml(
-                      r.teamId || ""
-                    )}
-                  </span>
-
-                </span>
-
-              </div>
-
-            `
-          ).join("")
+          `).join("")
         }
 
       </div>
@@ -1104,9 +735,9 @@ async function loadMatchRoom(){
     `;
 
 
-    /* ==========================
-       PROOFS SECTION
-    ========================== */
+    /*
+      PROOFS SECTION
+    */
 
     html += `
 
@@ -1116,48 +747,28 @@ async function loadMatchRoom(){
           Proofs
         </div>
 
+        <div class="proof-box">
 
-        <div class="proof-tabs">
+          <div class="proof-title">
+            Match Proof
+          </div>
 
-          <button
-            class="proof-tab active"
-            data-type="payment"
-          >
-            Payment Proof
-          </button>
-
-
-          <button
-            class="proof-tab"
-            data-type="lobby"
-          >
-            Lobby Proof
-          </button>
-
-
-          <button
-            class="proof-tab"
-            data-type="bermuda"
-          >
-            Bermuda
-          </button>
-
-
-          <button
-            class="proof-tab"
-            data-type="purgatory"
-          >
-            Purgatory
-          </button>
+          <div class="proof-text">
+            Match screenshots and result proofs
+            will be uploaded here after the match.
+          </div>
 
         </div>
 
+        <div class="proof-box">
 
-        <div id="proofContent"
-             class="proof-content">
+          <div class="proof-title">
+            Result Proof
+          </div>
 
-          <div class="proof-empty">
-            No payment proof uploaded yet.
+          <div class="proof-text">
+            Official match result proof will be
+            available after results are submitted.
           </div>
 
         </div>
@@ -1167,9 +778,9 @@ async function loadMatchRoom(){
     `;
 
 
-    /* ==========================
-       WHATSAPP
-    ========================== */
+    /*
+      WHATSAPP
+    */
 
     html += `
 
@@ -1177,7 +788,7 @@ async function loadMatchRoom(){
         href="#"
         class="whatsapp-btn"
         onclick="
-          alert('WhatsApp Channel link not configured yet.');
+          alert('WhatsApp Channel link will be added.');
           return false;
         "
       >
@@ -1187,22 +798,7 @@ async function loadMatchRoom(){
     `;
 
 
-    content.innerHTML =
-      html;
-
-
-    /*
-      Activate proof buttons
-    */
-
-    setupProofTabs();
-
-
-    /*
-      Render first proof
-    */
-
-    renderProof("payment");
+    content.innerHTML = html;
 
 
   }catch(err){
@@ -1213,14 +809,11 @@ async function loadMatchRoom(){
 
       <div class="error">
 
-        Error loading data.
+        Error loading match data.
 
         <br><br>
 
-        ${escapeHtml(
-          err.message ||
-          "Unknown error"
-        )}
+        ${escapeHtml(err.message)}
 
       </div>
 
@@ -1230,10 +823,6 @@ async function loadMatchRoom(){
 
 }
 
-
-/* ==============================
-   START
-============================== */
 
 loadMatchRoom();
 
