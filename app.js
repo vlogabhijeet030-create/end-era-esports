@@ -9,25 +9,17 @@ async function endEraApi(action,data={}){
     });
     return await r.json();
   }catch(e){
-    return {ok:false,message:"Server connection failed"};
+    return{ok:false,message:"Server connection failed"};
   }
-}
-
-function menu(){
-  const n=document.querySelector("nav");
-  if(n)n.classList.toggle("show");
-}
-
-function saveUser(user){
-  localStorage.setItem("ee_user",JSON.stringify(user));
 }
 
 function getUser(){
-  try{
-    return JSON.parse(localStorage.getItem("ee_user")||"null");
-  }catch(e){
-    return null;
-  }
+  try{return JSON.parse(localStorage.getItem("ee_user")||"null")}
+  catch(e){return null}
+}
+
+function saveUser(u){
+  localStorage.setItem("ee_user",JSON.stringify(u));
 }
 
 function logout(){
@@ -36,45 +28,16 @@ function logout(){
   location.href="login.html";
 }
 
-function guardLogin(){
-  if(!getUser())location.href="login.html";
-}
-
-function guardAdmin(){
-  const u=getUser();
-  if(!u||u.role!=="admin")location.href="login.html";
-}
-
-async function signupUser(name,email,phone,password){
-  const r=await endEraApi("signup",{name,email,phone,password});
-  if(r.ok&&r.user)saveUser(r.user);
-  return r;
-}
-
 async function loginUser(email,password){
   const r=await endEraApi("login",{email,password});
   if(r.ok&&r.user)saveUser(r.user);
   return r;
 }
 
-async function createTeam(userId,teamName,captain,logo){
-  return await endEraApi("createTeam",{userId,teamName,captain:captain||"",logo:logo||""});
-}
-
-async function addPlayer(teamId,playerName,uid,role){
-  return await endEraApi("addPlayer",{teamId,playerName,uid:uid||"",role:role||"Player"});
-}
-
-async function getMyTeams(userId){
-  return await endEraApi("getMyTeams",{userId});
-}
-
-async function getTeam(teamId){
-  return await endEraApi("getTeam",{teamId});
-}
-
-async function getTeamPlayers(teamId){
-  return await endEraApi("getTeamPlayers",{teamId});
+async function signupUser(name,email,phone,password){
+  const r=await endEraApi("signup",{name,email,phone,password});
+  if(r.ok&&r.user)saveUser(r.user);
+  return r;
 }
 
 async function getTournaments(){
@@ -85,11 +48,98 @@ async function getTournament(tournamentId){
   return await endEraApi("getTournament",{tournamentId});
 }
 
-async function registerTeam(tournamentId,teamId,userId){
+async function getMyTeams(userId){
+  return await endEraApi("getMyTeams",{userId});
+}
+
+async function registerTeam(tournamentId,teamId,userId,utr){
   return await endEraApi("registerTeam",{
     tournamentId,
     teamId,
-    registeredBy:userId
+    registeredBy:userId,
+    utr:utr||""
+  });
+}
+
+/* FIX: Submit Registration */
+async function submitRegistration(tournamentId,teamId,utr){
+  const u=getUser();
+
+  if(!u){
+    alert("Please login first.");
+    location.href="login.html";
+    return{ok:false};
+  }
+
+  if(!tournamentId||!teamId){
+    alert("Tournament ID or Team ID missing.");
+    return{ok:false};
+  }
+
+  const r=await endEraApi("submitRegistration",{
+    tournamentId,
+    teamId,
+    registeredBy:u.userId,
+    utr:utr||""
+  });
+
+  alert(r.message||"Registration submitted.");
+
+  return r;
+}
+
+/* Compatibility with old HTML */
+async function submitTournamentRegistration(tournamentId,teamId,utr){
+  return await submitRegistration(tournamentId,teamId,utr);
+}
+
+/* FIX: Admin OPEN / CLOSE */
+async function adminSetRegistration(tournamentId,open){
+  const u=getUser();
+
+  if(!u){
+    alert("Admin login required.");
+    return{ok:false};
+  }
+
+  return await endEraApi("setRegistration",{
+    tournamentId,
+    registrationOpen:open,
+    adminEmail:u.email
+  });
+}
+
+async function openRegistration(tournamentId){
+  const r=await adminSetRegistration(tournamentId,true);
+  alert(r.message||"Done");
+  if(r.ok)location.reload();
+  return r;
+}
+
+async function closeRegistration(tournamentId){
+  const r=await adminSetRegistration(tournamentId,false);
+  alert(r.message||"Done");
+  if(r.ok)location.reload();
+  return r;
+}
+
+async function adminApproveRegistration(id){
+  const u=getUser();
+  if(!u)return{ok:false,message:"Admin login required"};
+
+  return await endEraApi("approveRegistration",{
+    registrationId:id,
+    adminEmail:u.email
+  });
+}
+
+async function adminRejectRegistration(id){
+  const u=getUser();
+  if(!u)return{ok:false,message:"Admin login required"};
+
+  return await endEraApi("rejectRegistration",{
+    registrationId:id,
+    adminEmail:u.email
   });
 }
 
@@ -119,323 +169,74 @@ async function getPointsTable(tournamentId,groupId){
   });
 }
 
+async function createTeam(userId,teamName,captain,logo){
+  return await endEraApi("createTeam",{
+    userId,teamName,
+    captain:captain||"",
+    logo:logo||""
+  });
+}
+
+async function addPlayer(teamId,playerName,uid,role){
+  return await endEraApi("addPlayer",{
+    teamId,playerName,
+    uid:uid||"",
+    role:role||"Player"
+  });
+}
+
 async function adminCreateTournament(data){
   const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("createTournament",{...data,adminEmail:u.email});
+  if(!u)return{ok:false,message:"Admin login required"};
+
+  return await endEraApi("createTournament",{
+    ...data,
+    adminEmail:u.email
+  });
 }
 
 async function adminUpdateTournament(tournamentId,data){
   const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("updateTournament",{tournamentId,adminEmail:u.email,...data});
-}
+  if(!u)return{ok:false,message:"Admin login required"};
 
-async function adminSetRegistration(tournamentId,open){
-  const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("setRegistration",{
+  return await endEraApi("updateTournament",{
     tournamentId,
-    registrationOpen:open,
-    adminEmail:u.email
-  });
-}
-
-async function adminRegisterTeam(tournamentId,teamId){
-  const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("adminRegisterTeam",{
-    tournamentId,
-    teamId,
-    adminEmail:u.email
-  });
-}
-
-async function adminApproveRegistration(registrationId){
-  const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("approveRegistration",{
-    registrationId,
-    adminEmail:u.email
-  });
-}
-
-async function adminRejectRegistration(registrationId){
-  const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("rejectRegistration",{
-    registrationId,
-    adminEmail:u.email
+    adminEmail:u.email,
+    ...data
   });
 }
 
 async function adminCreateGroup(data){
   const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("createGroup",{...data,adminEmail:u.email});
+  if(!u)return{ok:false,message:"Admin login required"};
+
+  return await endEraApi("createGroup",{
+    ...data,
+    adminEmail:u.email
+  });
 }
 
 async function adminUpdateRoom(groupId,data){
   const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("updateRoom",{groupId,adminEmail:u.email,...data});
+  if(!u)return{ok:false,message:"Admin login required"};
+
+  return await endEraApi("updateRoom",{
+    groupId,
+    adminEmail:u.email,
+    ...data
+  });
 }
 
 async function adminSubmitResult(data){
   const u=getUser();
-  if(!u)return {ok:false,message:"Admin login required"};
-  return await endEraApi("submitResult",{...data,adminEmail:u.email});
-}
+  if(!u)return{ok:false,message:"Admin login required"};
 
-function showMessage(message){
-  alert(message);
-}
-
-async function renderMatches(){
-  const box=document.getElementById("matches");
-  if(!box)return;
-
-  box.innerHTML="<p>Loading tournaments...</p>";
-  const r=await getTournaments();
-
-  if(!r.ok){
-    box.innerHTML="<p>Unable to load tournaments.</p>";
-    return;
-  }
-
-  box.innerHTML=(r.tournaments||[]).map(tournamentCard).join("");
-}
-
-async function showT(type="all"){
-  const box=document.getElementById("tournaments");
-  if(!box)return;
-
-  box.innerHTML="<p>Loading tournaments...</p>";
-  const r=await getTournaments();
-
-  if(!r.ok){
-    box.innerHTML="<p>Unable to load tournaments.</p>";
-    return;
-  }
-
-  let list=r.tournaments||[];
-
-  if(type!=="all"){
-    list=list.filter(x=>
-      String(x.type||"").toLowerCase()===
-      String(type).toLowerCase()
-    );
-  }
-
-  box.innerHTML=list.map(tournamentCard).join("");
-}
-
-function tournamentCard(t){
-
-  const open=
-    t.registrationOpen===true||
-    String(t.registrationOpen).toLowerCase()==="true";
-
-  const id=encodeURIComponent(t.tournamentId||"");
-
-  return `
-    <article class="card">
-      <span class="tag">${String(t.type||"SCRIM").toUpperCase()}</span>
-      <h2>${escapeHtml(t.name||"Tournament")}</h2>
-
-      <div class="meta">
-        <span>ENTRY <b>${escapeHtml(t.entryFee||"FREE")}</b></span>
-        <span>PRIZE <b>${escapeHtml(t.prize||"TBA")}</b></span>
-        <span>MAP <b>${escapeHtml(t.map||"TBA")}</b></span>
-        <span>TIME <b>${escapeHtml(t.matchTime||"TBA")}</b></span>
-      </div>
-
-      ${
-        open
-        ?`
-        <button type="button" class="btn full"
-          onclick="startRegistration('${id}')">
-          Register
-        </button>`
-        :`
-        <span class="btn full">
-          Registration Closed
-        </span>`
-      }
-    </article>
-  `;
-}
-
-async function startRegistration(encodedId){
-
-  const tournamentId=decodeURIComponent(encodedId||"");
-
-  if(!tournamentId){
-    showMessage("Tournament ID missing.");
-    return;
-  }
-
-  const user=getUser();
-
-  if(!user){
-    showMessage("Please login first.");
-    setTimeout(()=>location.href="login.html",500);
-    return;
-  }
-
-  const r=await getMyTeams(user.userId);
-
-  if(!r.ok){
-    showMessage(r.message||"Unable to load your teams.");
-    return;
-  }
-
-  const teams=r.teams||[];
-
-  if(!teams.length){
-    showMessage("Please create a team first.");
-    return;
-  }
-
-  let teamId="";
-
-  if(teams.length===1){
-    teamId=teams[0].teamId;
-  }else{
-    let text="Select your team:\n\n";
-
-    teams.forEach((team,i)=>{
-      text+=(i+1)+". "+team.teamName+"\n";
-    });
-
-    const answer=prompt(text+"\nEnter team number:");
-    const index=parseInt(answer,10)-1;
-
-    if(isNaN(index)||index<0||index>=teams.length){
-      showMessage("Invalid team selected.");
-      return;
-    }
-
-    teamId=teams[index].teamId;
-  }
-
-  showMessage("Registering...");
-
-  const result=await registerTeam(
-    tournamentId,
-    teamId,
-    user.userId
-  );
-
-  if(result.ok){
-    showMessage(result.message||"Registration submitted successfully.");
-    setTimeout(()=>location.reload(),800);
-  }else{
-    showMessage(result.message||"Registration failed.");
-  }
-}
-
-async function submitTournamentRegistration(tournamentId,teamId){
-
-  const user=getUser();
-
-  if(!user){
-    location.href="login.html";
-    return;
-  }
-
-  if(!teamId){
-    showMessage("Please select a team.");
-    return;
-  }
-
-  const r=await registerTeam(
-    tournamentId,
-    teamId,
-    user.userId
-  );
-
-  showMessage(r.message||"Registration submitted.");
-}
-
-async function loadMyTeams(selectId){
-
-  const user=getUser();
-  if(!user)return;
-
-  const r=await getMyTeams(user.userId);
-  if(!r.ok)return;
-
-  const select=document.getElementById(selectId);
-  if(!select)return;
-
-  select.innerHTML="";
-
-  (r.teams||[]).forEach(t=>{
-    const option=document.createElement("option");
-    option.value=t.teamId;
-    option.textContent=t.teamName;
-    select.appendChild(option);
+  return await endEraApi("submitResult",{
+    ...data,
+    adminEmail:u.email
   });
 }
 
-async function login(e){
-
-  if(e)e.preventDefault();
-
-  const email=document.getElementById("email")?.value.trim()||"";
-  const password=document.getElementById("password")?.value||"";
-
-  if(!email||!password){
-    showMessage("Email and password required.");
-    return false;
-  }
-
-  const r=await loginUser(email,password);
-
-  if(!r.ok){
-    showMessage(r.message||"Login failed.");
-    return false;
-  }
-
-  if(r.user.role==="admin"){
-    localStorage.setItem("ee_admin","1");
-    location.href="admin.html";
-  }else{
-    location.href="index.html";
-  }
-
-  return false;
+function showMessage(x){
+  alert(x);
 }
-
-async function signup(e){
-
-  if(e)e.preventDefault();
-
-  const name=document.getElementById("name")?.value.trim()||"";
-  const email=document.getElementById("email")?.value.trim()||"";
-  const phone=document.getElementById("phone")?.value.trim()||"";
-  const password=document.getElementById("password")?.value||"";
-
-  if(!name||!email||!password){
-    showMessage("Name, email and password required.");
-    return false;
-  }
-
-  const r=await signupUser(name,email,phone,password);
-
-  showMessage(r.message||"Signup complete.");
-
-  if(r.ok)location.href="index.html";
-
-  return false;
-}
-
-function escapeHtml(value){
-  return String(value??"")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-} 
